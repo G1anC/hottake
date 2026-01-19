@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id             Int     @id @default(autoincrement())
+    email          String  @unique
+    name           String?
+    password       String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    profilePicture String?
+    bio            String?
+    color          String?
+    reviews        Review[]
+    favorites      Review[] @relation("FavoriteReviews")
+}
+
+model Review {
+    id          Int      @id @default(autoincrement())
+    albumName   String
+    content     String?
+    note        Int
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    author      User     @relation(fields: [authorId], references: [id])
+    authorId    Int
+    favoritedBy User[] @relation("FavoriteReviews")
+}
