@@ -1,3 +1,5 @@
+import { log } from "node:console"
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export interface ValidationError {
@@ -50,9 +52,10 @@ class Api {
     }
 
     public users = {
-        register: (user: object) => this.post('/users/', user),
+        register: (user: object) => this.post('/users/create', user),
         getMe: () => this.get('/users/me'),
         login: (email: string, password: string) => this.post('/users/login', { email, password }),
+        logout: () => this.post('/users/logout', {}),
         getUserById: (id: number) => this.get(`/users/${id}`),
         changeUser: (id: number, user: object) => this.put(`/users/${id}`, user),
         deleteUser: (id: number) => this.delete(`/users/${id}`),

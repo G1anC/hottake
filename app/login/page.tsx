@@ -10,7 +10,8 @@ export default function LoginPage() {
 	const [values, setValues] = React.useState({
 		name: "",
 		password: "",
-		email: ""
+		email: "",
+		pseudo: ""
 	});
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,10 +59,29 @@ export default function LoginPage() {
 		setSubmitted(true);
 	};
 
+
+	const pseudoComponent = () => {
+		return (
+			<>
+				<div>
+					Add your pseudo
+				</div>
+				<input
+					className="form-field bg-white"
+					type="text"
+					placeholder="Pseudo"
+					name="pseudo"
+					value={values.name}
+					onChange={handleInputChange}
+				/>
+			</>
+		);
+	}
+
 	if (submitted && valid) {
 		return (
-			<div className="form-container bg-[#2b2b2b] h-screen w-screen flex items-center justify-center">
-				<h1 className="success-message text-white text-2xl">
+			<div className="form-container bg-stone-100 h-screen w-screen flex items-center justify-center">
+				<h1 className="success-message  text-2xl">
 					Registration Successful!
 				</h1>
 			</div>
@@ -69,20 +89,20 @@ export default function LoginPage() {
 	}
 
 	return (
-		<div className="form-container bg-[#2b2b2b] h-screen w-screen flex flex-col items-center gap-24 justify-center">
-			<h1 className="text-white text-4xl">HOTTAKE</h1>
+		<div className=" bg-stone-100 h-screen text-black w-screen flex flex-col items-center gap-24 justify-center">
+			<h1 className=" text-4xl">HOTTAKE</h1>
 
 			{registerOrLogin === 'register' ? (
 				<button
 					onClick={() => setRegisterOrLogin('login')}
-					className="text-white"
+					className=""
 				>
 					Login to your account
 				</button>
 			) : (
 				<button
 					onClick={() => setRegisterOrLogin('register')}
-					className="text-white"
+					className=""
 				>
 					Create a new account
 				</button>
@@ -136,9 +156,9 @@ export default function LoginPage() {
 				{accountAlreadyExists && (
 					<span id="email-error" className="text-red-500">An account with this email already exists</span>
 				)}
-				
+
 				{!valid && (
-					<button className="form-field bg-white" type="submit">
+					<button className="form-field bg-white hover:bg-red-200 duration-100 transition-all" type="submit">
 						{registerOrLogin === 'register' ? 'Register' : 'Login'}
 					</button>
 				)}

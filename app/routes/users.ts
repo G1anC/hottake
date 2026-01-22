@@ -4,7 +4,6 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcrypt';
 import 'dotenv/config'
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
 
 const saltRounds = 10;
 const users = new Hono();
@@ -29,16 +28,10 @@ export async function decryptSession(token: string) {
 // get authenticated user profile
 users.get('/me', async (c) => {
     try {
-        const cookieHeader = c.req.header('cookie')
-        
-        if (!cookieHeader) {
-            return c.json({ message: 'Not authenticated' }, 401)
-        }
-        
-        const sessionToken = cookieHeader.split('session=')[1]?.split(';')[0]
+        const sessionToken = (await cookies()).get('session')?.value
         
         if (!sessionToken) {
-            return c.json({ message: 'No session' }, 401)
+            return c.json({ message: 'Not authenticated' }, 401)
         }
         
         const verified = await decryptSession(sessionToken)
@@ -50,6 +43,7 @@ users.get('/me', async (c) => {
                 id: true,
                 email: true,
                 name: true,
+                pseudo: true,
                 createdAt: true,
                 bio: true,
                 color: true,
@@ -57,9 +51,8 @@ users.get('/me', async (c) => {
             },
         })
         
-        if (!user) {
+        if (!user)
             return c.json({ message: 'User not found' }, 404)
-        }
         
         return c.json(user, 200)
     } catch (e) {
@@ -76,6 +69,7 @@ users.get('/', async (c) => {
             id: true,
             email: true,
             name: true,
+            pseudo: true,
             createdAt: true,
         },
     })
@@ -87,12 +81,11 @@ users.get('/', async (c) => {
 
 
 // create a new user
-users.post('/', async (c) => {
-    const { email, name, password } = await c.req.json()
+users.post('/create', async (c) => {
+    const { email, name, password, pseudo } = await c.req.json()
 
-    if (!email || !name || !password) {
+    if (!email || !name || !password || !pseudo)
         return c.json({ message: 'Missing fields' }, 400)
-    }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds)
 
@@ -101,12 +94,14 @@ users.post('/', async (c) => {
             data: {
                 email: email.toLowerCase(),
                 name,
+                pseudo,
                 password: hashedPassword,
             },
             select: {
                 id: true,
                 email: true,
                 name: true,
+                pseudo: true,
                 createdAt: true,
             },
         })
@@ -120,10 +115,8 @@ users.post('/', async (c) => {
 
         return c.json(user, 201)
     } catch (e: unknown) {
-        // Narrow the error
-        if (e instanceof Error && 'code' in e && e.code === 'P2002') {
+        if (e instanceof Error && 'code' in e && e.code === 'P2002')
             return c.json({ message: 'Email already exists' }, 409)
-        }
         return c.json({ message: 'Internal server error' }, 500)
     }
 })
@@ -136,9 +129,8 @@ users.post('/', async (c) => {
 users.post('/login', async (c) => {
     const { email, password } = await c.req.json()
     
-    if (!email || !password) {
+    if (!email || !password)
         return c.json({ message: 'Missing fields' }, 400)
-    }
     
     const user = await prisma.user.findUnique({
         where: { email: email.toLowerCase() },
@@ -181,6 +173,7 @@ users.get('/:id', async (c) => {
             id: true,
             email: true,
             name: true,
+            pseudo: true,
             createdAt: true,
             bio: true,
             color: true,
