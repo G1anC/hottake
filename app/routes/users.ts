@@ -106,14 +106,14 @@ users.post('/create', async (c) => {
             },
         })
 
-        const expires = new Date(Date.now() + 10 * 60 * 1000)
+        const expires = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
         const session = await encryptSession({ email, expires })
 
         ;(await cookies()).set("session", session, {
             httpOnly: true,
         })
 
-        return c.json(user, 201)
+        return c.json(user, 200)
     } catch (e: unknown) {
         if (e instanceof Error && 'code' in e && e.code === 'P2002')
             return c.json({ message: 'Email already exists' }, 409)

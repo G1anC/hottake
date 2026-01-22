@@ -3,6 +3,7 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT,
+    "pseudo" TEXT,
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Review" (
     "id" SERIAL NOT NULL,
-    "title" TEXT NOT NULL,
+    "mbid" TEXT NOT NULL,
     "content" TEXT,
     "note" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,6 +37,12 @@ CREATE TABLE "_FavoriteReviews" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_pseudo_key" ON "User"("pseudo");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Review_mbid_key" ON "Review"("mbid");
 
 -- CreateIndex
 CREATE INDEX "_FavoriteReviews_B_index" ON "_FavoriteReviews"("B");

@@ -43,6 +43,7 @@ export default function LoginPage() {
 			if (values.name && values.password && values.email) {
 				const response = await api.users.register({
 					name: values.name,
+					pseudo: values.pseudo,
 					password: values.password,
 					email: values.email
 				});
@@ -58,25 +59,6 @@ export default function LoginPage() {
 		}
 		setSubmitted(true);
 	};
-
-
-	const pseudoComponent = () => {
-		return (
-			<>
-				<div>
-					Add your pseudo
-				</div>
-				<input
-					className="form-field bg-white"
-					type="text"
-					placeholder="Pseudo"
-					name="pseudo"
-					value={values.name}
-					onChange={handleInputChange}
-				/>
-			</>
-		);
-	}
 
 	if (submitted && valid) {
 		return (
@@ -124,6 +106,22 @@ export default function LoginPage() {
 							onChange={handleInputChange}
 							/>
 						)}
+
+						{submitted && !values.pseudo && (
+							<span id="first-name-error">Please enter a pseudo</span>
+						)}
+						{!valid && (
+							<input
+							className="form-field bg-white"
+							type="text"
+							placeholder="Pseudo"
+							name="pseudo"
+							value={values.pseudo}
+							onChange={handleInputChange}
+							/>
+						)}
+
+
 					</>
 				}
 

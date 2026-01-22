@@ -68,6 +68,13 @@ class Api {
         updateReview: (id: number, review: object) => this.put(`/reviews/${id}`, review),
         deleteReview: (id: number) => this.delete(`/reviews/${id}`),
     }
+
+    public lastfm = {
+        searchArtist: (artistName: string) => this.get(`/lastfm/artist/search?artist=${encodeURIComponent(artistName)}`),
+        getArtistInfo: (artist: string) => this.get(`/lastfm/artist/${encodeURIComponent(artist)}`),
+        searchAlbum: (albumName: string, artist?: string) => this.get(`/lastfm/album/search?album=${encodeURIComponent(albumName)}${artist ? `&artist=${encodeURIComponent(artist)}` : ''}`),
+        getAlbumInfo: (artist: string, album: string) => this.get(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`),
+    }
 }
 
 export default Api

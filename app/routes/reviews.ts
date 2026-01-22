@@ -39,14 +39,14 @@ reviews.get('/:id', async (c) => {
 
 // create a new review
 reviews.post('/', async (c) => {
-    const { user, content, note, albumName } = await c.req.json()
+    const { user, content, note, mbid } = await c.req.json()
 
     const review = await prisma.review.create({
         data: {
             authorId: user,
             content,
             note,
-            albumName,
+            mbid,
         },
     })
 
@@ -66,7 +66,7 @@ reviews.delete('/:id', async (c) => {
 // change a review by its id
 reviews.put('/:id', async (c) => {
     const id = c.req.param('id')
-    const { user, content, note, albumName } = await c.req.json()
+    const { user, content, note, mbid } = await c.req.json()
 
     const review = await prisma.review.update({
         where: { id: Number(id) },
@@ -74,7 +74,7 @@ reviews.put('/:id', async (c) => {
             authorId: user,
             content,
             note,
-            albumName,
+            mbid,
         },
     })
 
