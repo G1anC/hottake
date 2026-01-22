@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import 'dotenv/config'
 import prisma from '../api/prisma';
 
-const reviews = new Hono().basePath('/api')
+const reviews = new Hono()
 
 // get every review of a user
 reviews.get('/users/:id', async (c) => {

@@ -1,10 +1,90 @@
 import { Hono } from 'hono'
 import prisma from '../api/prisma';
+import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcrypt';
 import 'dotenv/config'
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
 const saltRounds = 10;
-const users = new Hono().basePath('/api')
+const users = new Hono();
+const key = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+export async function encryptSession(payload: any) {
+    return await new SignJWT(payload)
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setExpirationTime('10m')
+        .sign(key)
+}
+
+export async function decryptSession(token: string) {
+    return await jwtVerify(token, key, {
+        algorithms: ['HS256'],
+    })
+}
+
+
+
+// get authenticated user profile
+users.get('/me', async (c) => {
+    try {
+        const cookieHeader = c.req.header('cookie')
+        
+        if (!cookieHeader) {
+            return c.json({ message: 'Not authenticated' }, 401)
+        }
+        
+        const sessionToken = cookieHeader.split('session=')[1]?.split(';')[0]
+        
+        if (!sessionToken) {
+            return c.json({ message: 'No session' }, 401)
+        }
+        
+        const verified = await decryptSession(sessionToken)
+        const email = (verified.payload as any).email
+        
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                createdAt: true,
+                bio: true,
+                color: true,
+                profilePicture: true,
+            },
+        })
+        
+        if (!user) {
+            return c.json({ message: 'User not found' }, 404)
+        }
+        
+        return c.json(user, 200)
+    } catch (e) {
+        return c.json({ message: 'Invalid session' }, 401)
+    }
+})
+
+
+
+// get all users
+users.get('/', async (c) => {
+    const allUsers = await prisma.user.findMany({
+        select: {
+            id: true,
+            email: true,
+            name: true,
+            createdAt: true,
+        },
+    })
+    return c.json(allUsers)
+})
+
+
+
+
 
 // create a new user
 users.post('/', async (c) => {
@@ -31,6 +111,13 @@ users.post('/', async (c) => {
             },
         })
 
+        const expires = new Date(Date.now() + 10 * 60 * 1000)
+        const session = await encryptSession({ email, expires })
+
+        ;(await cookies()).set("session", session, {
+            httpOnly: true,
+        })
+
         return c.json(user, 201)
     } catch (e: unknown) {
         // Narrow the error
@@ -42,28 +129,47 @@ users.post('/', async (c) => {
 })
 
 
+
+
+
 // login a user
 users.post('/login', async (c) => {
     const { email, password } = await c.req.json()
-
+    
     if (!email || !password) {
         return c.json({ message: 'Missing fields' }, 400)
     }
-
+    
     const user = await prisma.user.findUnique({
         where: { email: email.toLowerCase() },
     })
-
+    
     if (!user)
         return c.json({ message: 'Invalid email or password' }, 401)
-
+    
     const passwordMatch = await bcrypt.compare(password, user.password)
-
+    
     if (!passwordMatch)
         return c.json({ message: 'Invalid email or password' }, 401)
+    
+    const expires = new Date(Date.now() + 10 * 60 * 1000)
+    const session = await encryptSession({ email, expires })
 
-    return c.json({ id: user.id, email: user.email, name: user.name })
+    ;(await cookies()).set("session", session, {
+        httpOnly: true,
+    })
+
+    return c.json({ message: 'Login successful' })
 })
+
+users.post('/logout', async (c) => {
+    (await cookies()).delete("session")
+    return c.json({ message: 'Logged out successfully.' })
+})
+
+
+
+
 
 // get a user by id
 users.get('/:id', async (c) => {
@@ -90,6 +196,10 @@ users.get('/:id', async (c) => {
     return c.json(user)
 })
 
+
+
+
+
 // change a user
 users.put('/:id', async (c) => {
     const id = Number(c.req.param('id'))
@@ -107,6 +217,10 @@ users.put('/:id', async (c) => {
     return c.json(user)
 })
 
+
+
+
+
 // delete a user
 users.delete('/:id', async (c) => {
     const id = Number(c.req.param('id'))
@@ -117,4 +231,4 @@ users.delete('/:id', async (c) => {
 })
 
 
-export default users
+export default users;

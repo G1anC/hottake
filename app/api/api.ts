@@ -14,7 +14,7 @@ export interface FetchResponse<T> {
 class Api {
     private baseUrl: string
 
-    constructor(baseUrl: string = '/api/') {
+    constructor(baseUrl: string = '/') {
         this.baseUrl = baseUrl
     }
 
@@ -51,6 +51,7 @@ class Api {
 
     public users = {
         register: (user: object) => this.post('/users/', user),
+        getMe: () => this.get('/users/me'),
         login: (email: string, password: string) => this.post('/users/login', { email, password }),
         getUserById: (id: number) => this.get(`/users/${id}`),
         changeUser: (id: number, user: object) => this.put(`/users/${id}`, user),
