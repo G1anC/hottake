@@ -1,4 +1,6 @@
+Le back est directement dans le front du coup tu as juste a lancer
 ```
-npm install
-npm run dev
+bun dev
 ```
+dans le root.
+
