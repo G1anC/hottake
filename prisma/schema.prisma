@@ -24,6 +24,7 @@ model User {
     updatedAt      DateTime @updatedAt
     profilePicture String?
     bio            String?
+    friends        User[]  @relation("UserFriends", references: [id])
     color          String?
     reviews        Review[]
     favorites      Review[] @relation("FavoriteReviews")

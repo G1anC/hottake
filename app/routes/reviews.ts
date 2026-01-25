@@ -2,7 +2,10 @@ import { Hono } from 'hono'
 import 'dotenv/config'
 import prisma from '../api/prisma';
 
+
+
 const reviews = new Hono()
+
 
 // get every review of a user
 reviews.get('/users/:id', async (c) => {
@@ -22,6 +25,7 @@ reviews.get('/users/:id', async (c) => {
     return c.json(reviews)
 })
 
+
 // get a single review by its id
 reviews.get('/:id', async (c) => {
     const id = c.req.param('id')
@@ -36,6 +40,7 @@ reviews.get('/:id', async (c) => {
 
     return c.json(review)
 })
+
 
 // create a new review
 reviews.post('/', async (c) => {
@@ -53,6 +58,7 @@ reviews.post('/', async (c) => {
     return c.json(review)
 })
 
+
 // delete a review by its id
 reviews.delete('/:id', async (c) => {
     const id = c.req.param('id')
@@ -62,6 +68,7 @@ reviews.delete('/:id', async (c) => {
 
     return c.json({ message: 'Review deleted successfully.' })
 })
+
 
 // change a review by its id
 reviews.put('/:id', async (c) => {

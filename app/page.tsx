@@ -2,8 +2,6 @@
 
 import React from 'react';
 import Api from './api/api';
-import LoginCheckPoint from './loginCheckPoint';
-import Nav from './components/Nav';
 
 export default function App() {
 	const api = new Api('/api');
@@ -11,7 +9,6 @@ export default function App() {
 	const [wa23, setWa23] = React.useState<any>(null);
 	const [album , setAlbum] = React.useState<any>(null);
 	const [albumAlike, setAlbumAlike] = React.useState<any[]>([]);
-	LoginCheckPoint();
 
 	React.useEffect(() => {
 		(async () => {
@@ -48,10 +45,7 @@ export default function App() {
 	}, [])
 
 	return (
-		<div className="bg-stone-100 h-screen w-screen flex flex-col items-center gap-24 justify-start">
-			<Nav />
-			<h1 className="text-black font-black text-4xl">HOTTAKE</h1>
-			<div>{user ? <p>Welcome, {user.name}!</p> : <p>Loading...</p>}</div>
+		<div className="h-screen w-screen flex flex-col items-center gap-24 justify-start">
 			{wa23 && 
 				<div className="flex flex-col items-center gap-4 bg-white rounded-2xl">
 					<p>Artist: {wa23.name}</p>

@@ -72,8 +72,12 @@ class Api {
     public lastfm = {
         searchArtist: (artistName: string) => this.get(`/lastfm/artist/search?artist=${encodeURIComponent(artistName)}`),
         getArtistInfo: (artist: string) => this.get(`/lastfm/artist/${encodeURIComponent(artist)}`),
+        getArtistInfoByMbid: (mbid: string) => this.get(`/lastfm/artist/mbid/${encodeURIComponent(mbid)}`),
+        getArtistTopAlbums: (artist: string) => this.get(`/lastfm/artist/${encodeURIComponent(artist)}/top-albums`),
+
         searchAlbum: (albumName: string, artist?: string) => this.get(`/lastfm/album/search?album=${encodeURIComponent(albumName)}${artist ? `&artist=${encodeURIComponent(artist)}` : ''}`),
         getAlbumInfo: (artist: string, album: string) => this.get(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`),
+        getAlbumInfoByMbid: (mbid: string) => this.get(`/lastfm/album/mbid/${encodeURIComponent(mbid)}`),
     }
 }
 

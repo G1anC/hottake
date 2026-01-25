@@ -1,14 +1,12 @@
 'use client';
 
-import Api from "../api/api"
+import Api from "../../api/api"
 import React from "react"
-import LoginCheckPoint from "../loginCheckPoint";
 
 export default function Profile() {
     const api = new Api('/api');
     const [user, setUser] = React.useState<any>(null);
     
-    LoginCheckPoint();
 
     React.useEffect(() => {
         (async () => {
@@ -18,7 +16,7 @@ export default function Profile() {
     }, [])
 
     return (
-        <div className="h-screen w-screen bg-white flex flex-col items-center gap-24 justify-center">
+        <div className="h-screen w-screen flex flex-col items-center gap-24 justify-center">
             {user ?
                 <p>
                     Profile Page<br />
@@ -34,7 +32,9 @@ export default function Profile() {
             }
             <button className={"bg-red-200"} onClick={async () => {
                 const response = await api.users.logout()
-                window.location.href = '/login'
+                //refresh the page
+                window.location.href = '/profile';
+
             }}>
                 Logout
             </button>

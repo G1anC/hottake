@@ -4,10 +4,12 @@ import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcrypt';
 import 'dotenv/config'
 import { cookies } from 'next/headers';
+import reviews from './reviews';
 
 const saltRounds = 10;
 const users = new Hono();
 const key = new TextEncoder().encode(process.env.JWT_SECRET!);
+
 
 export async function encryptSession(payload: any) {
     return await new SignJWT(payload)
@@ -22,7 +24,6 @@ export async function decryptSession(token: string) {
         algorithms: ['HS256'],
     })
 }
-
 
 
 // get authenticated user profile
@@ -61,7 +62,6 @@ users.get('/me', async (c) => {
 })
 
 
-
 // get all users
 users.get('/', async (c) => {
     const allUsers = await prisma.user.findMany({
@@ -75,6 +75,63 @@ users.get('/', async (c) => {
     })
     return c.json(allUsers)
 })
+
+
+
+
+
+// // add a friend to the user's friend list
+// users.post('/:id/add-friend', async (c) => {
+//     const userId = Number(c.req.param('id'))
+//     const { friendId } = await c.req.json()
+//     const user = await prisma.user.update({
+//         where: { id: userId },
+//         data: {
+//             friends: {
+//                 connect: { id: friendId }
+//             },
+//         },
+//     })
+//     return c.json(user)
+// })
+
+// // remove a friend from the user's friend list
+// users.post('/:id/remove-friend', async (c) => {
+//     const userId = Number(c.req.param('id'))
+//     const { friendId } = await c.req.json()
+//     const user = await prisma.user.update({
+//         where: { id: userId },
+//         data: {
+//             friends: {
+//                 disconnect: { id: friendId }
+//             },
+//         },
+//     })
+//     return c.json(user)
+// })
+
+// // get friends list of a user
+// users.get('/:id/friends', async (c) => {
+//     const userId = Number(c.req.param('id'))
+//     const user = await prisma.user.findUnique({
+//         where: { id: userId },
+//         select: {
+//             friends: {
+//                 select: {
+//                     id: true,
+//                     name: true,
+//                     pseudo: true,
+//                     profilePicture: true,
+//                     reviews: true,
+//                 }
+//             },
+//         },
+//     })
+//     if (!user) {
+//         return c.json({ message: 'User not found' }, 404)
+//     }
+//     return c.json(user.friends)
+// })
 
 
 
@@ -122,9 +179,6 @@ users.post('/create', async (c) => {
 })
 
 
-
-
-
 // login a user
 users.post('/login', async (c) => {
     const { email, password } = await c.req.json()
@@ -160,9 +214,6 @@ users.post('/logout', async (c) => {
 })
 
 
-
-
-
 // get a user by id
 users.get('/:id', async (c) => {
     const id = Number(c.req.param('id'))
@@ -190,9 +241,6 @@ users.get('/:id', async (c) => {
 })
 
 
-
-
-
 // change a user
 users.put('/:id', async (c) => {
     const id = Number(c.req.param('id'))
@@ -209,9 +257,6 @@ users.put('/:id', async (c) => {
     })
     return c.json(user)
 })
-
-
-
 
 
 // delete a user
