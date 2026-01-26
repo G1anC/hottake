@@ -14,7 +14,6 @@ export default function RootLayout({
     return (
       <html lang="en">
             <body className="w-screen h-full bg-[#0c0c0e] p-0 m-0 overflow-hidden">
-                <Nav />
                 {children}
             </body>
       </html>

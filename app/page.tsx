@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Api from './api/api';
+import Nav from './components/nav'
 
 export default function App() {
 	const api = new Api('/api');
@@ -46,6 +47,7 @@ export default function App() {
 
 	return (
 		<div className="h-screen w-screen flex flex-col items-center gap-24 justify-start">
+			<Nav />
 			{wa23 && 
 				<div className="flex flex-col items-center gap-4 bg-white rounded-2xl">
 					<p>Artist: {wa23.name}</p>

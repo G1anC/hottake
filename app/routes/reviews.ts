@@ -41,20 +41,51 @@ reviews.get('/:id', async (c) => {
     return c.json(review)
 })
 
+reviews.get('/album/:mbid', async (c) => {
+    const mbid = c.req.param('mbid');
+
+    try {
+        const reviews = await prisma.review.findMany({
+            where: { mbid },
+            select: {
+                author: {
+                    select: {
+                        id: true,
+                        pseudo: true,
+                        email: true,
+                        name: true,
+                    },
+                },
+                mbid: true,
+                content: true,
+                note: true,
+            },
+        });
+
+        // Return the array (empty if no reviews)
+        return c.json(reviews);
+    } catch (e) {
+        console.error('Error fetching reviews:', e);
+        return c.json({ message: 'Server error' }, 500);
+    }
+});
 
 // create a new review
 reviews.post('/', async (c) => {
-    const { user, content, note, mbid } = await c.req.json()
+    const { authorId, content, note, mbid } = await c.req.json();
+    if (!authorId)
+        return c.json({message: "No authorId found"}, 404)
 
     const review = await prisma.review.create({
         data: {
-            authorId: user,
             content,
             note,
             mbid,
+            author: {
+                connect: { id: authorId },
+            },
         },
-    })
-
+    });
     return c.json(review)
 })
 
@@ -62,13 +93,15 @@ reviews.post('/', async (c) => {
 // delete a review by its id
 reviews.delete('/:id', async (c) => {
     const id = c.req.param('id')
+
+    if (!id)
+        return c.json({message: "No user is connected"}, 404)
     await prisma.review.delete({
         where: { id: Number(id) },
     })
 
     return c.json({ message: 'Review deleted successfully.' })
 })
-
 
 // change a review by its id
 reviews.put('/:id', async (c) => {

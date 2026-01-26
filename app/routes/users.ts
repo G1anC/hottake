@@ -1,10 +1,13 @@
-import { Hono } from 'hono'
+import { Hono, Context } from 'hono'
 import prisma from '../api/prisma';
 import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcrypt';
 import 'dotenv/config'
-import { cookies } from 'next/headers';
-import reviews from './reviews';
+import {
+    deleteCookie,
+    getCookie,
+    setCookie,
+  } from 'hono/cookie'
 
 const saltRounds = 10;
 const users = new Hono();
@@ -19,36 +22,49 @@ export async function encryptSession(payload: any) {
         .sign(key)
 }
 
-export async function decryptSession(token: string) {
-    return await jwtVerify(token, key, {
-        algorithms: ['HS256'],
-    })
-}
+export async function authenticateUser(c: Context): Promise<number | null> {
+    try {
+        const token = getCookie(c, "session")
+        console.log(token)
+        if (!token)
+            return null
+        const jwt = await jwtVerify(token, key, {
+            algorithms: ['HS256']
+        })
+        console.log(jwt.payload.id)
+        return jwt.payload.id as number
 
+    } catch (e: any) {
+        return null
+    }
+}
 
 // get authenticated user profile
 users.get('/me', async (c) => {
     try {
-        const sessionToken = (await cookies()).get('session')?.value
-        
-        if (!sessionToken) {
-            return c.json({ message: 'Not authenticated' }, 401)
-        }
-        
-        const verified = await decryptSession(sessionToken)
-        const email = (verified.payload as any).email
+        const id: number | null = await authenticateUser(c)
+
+        if (!id)
+            throw("Invalid session")
         
         const user = await prisma.user.findUnique({
-            where: { email },
+            where: { id },
             select: {
                 id: true,
                 email: true,
+                image: true,
                 name: true,
                 pseudo: true,
                 createdAt: true,
                 bio: true,
                 color: true,
-                profilePicture: true,
+                reviews: true,
+                bigFive: true,
+                Listened: true,
+                nextList: true,
+                hotTakes: true,
+                friends: true,
+                friendOf: true,
             },
         })
         
@@ -152,26 +168,25 @@ users.post('/create', async (c) => {
                 email: email.toLowerCase(),
                 name,
                 pseudo,
-                password: hashedPassword,
+                password: hashedPassword
             },
             select: {
-                id: true,
-                email: true,
-                name: true,
-                pseudo: true,
-                createdAt: true,
-            },
+                id: true
+            }
         })
+        if (!user)
+            return
+        const expires = new Date(Date.now() + 60 * 24 * 60 * 60 * 10000)
+        // TODO: change from email to id for the jwt
+        const session = await encryptSession({userId: user.id, expires})
 
-        const expires = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000)
-        const session = await encryptSession({ email, expires })
-
-        ;(await cookies()).set("session", session, {
+        setCookie(c, "session", session, {
             httpOnly: true,
         })
 
         return c.json(user, 200)
     } catch (e: unknown) {
+        // TODO: change to 402 for the 
         if (e instanceof Error && 'code' in e && e.code === 'P2002')
             return c.json({ message: 'Email already exists' }, 409)
         return c.json({ message: 'Internal server error' }, 500)
@@ -198,10 +213,10 @@ users.post('/login', async (c) => {
     if (!passwordMatch)
         return c.json({ message: 'Invalid email or password' }, 401)
     
-    const expires = new Date(Date.now() + 10 * 60 * 1000)
+    const expires = new Date(Date.now() + 60 * 24 * 60 * 60 * 10000)
     const session = await encryptSession({ email, expires })
 
-    ;(await cookies()).set("session", session, {
+    setCookie(c, "session", session, {
         httpOnly: true,
     })
 
@@ -209,7 +224,7 @@ users.post('/login', async (c) => {
 })
 
 users.post('/logout', async (c) => {
-    (await cookies()).delete("session")
+    deleteCookie(c, "session")
     return c.json({ message: 'Logged out successfully.' })
 })
 
@@ -223,28 +238,53 @@ users.get('/:id', async (c) => {
         select: {
             id: true,
             email: true,
+            image: true,
             name: true,
             pseudo: true,
             createdAt: true,
             bio: true,
             color: true,
             reviews: true,
-            profilePicture: true,
-            favorites: true,
+            bigFive: true,
+            Listened: true,
+            nextList: true,
+            hotTakes: true,
+            friends: true,
+            friendOf: true
         },
     })
 
     if (!user) {
         return c.json({ message: 'User not found' }, 404)
     }
+    
     return c.json(user)
 })
+
+
+
+users.post('/image/:id', async (c) => {
+    const id: number | null = await authenticateUser(c)
+
+    if (!id)
+        return
+
+    const { image }: { image: string } = await c.req.json()
+    const user = await prisma.user.update({
+        where: { id },
+        data: {
+            image: image
+        },
+    })
+    return c.json(user)
+})
+
 
 
 // change a user
 users.put('/:id', async (c) => {
     const id = Number(c.req.param('id'))
-    const { name, bio, color, profilePicture } = await c.req.json()
+    const { name, bio, color } = await c.req.json()
 
     const user = await prisma.user.update({
         where: { id },
@@ -252,7 +292,6 @@ users.put('/:id', async (c) => {
             name,
             bio,
             color,
-            profilePicture,
         },
     })
     return c.json(user)

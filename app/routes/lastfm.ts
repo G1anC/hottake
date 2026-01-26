@@ -79,7 +79,7 @@ lastfm.get('/album/:artist/:album', async (c) => {
 
 
 // get album info by MBID
-lastfm.get('/album/mbid/:mbid', async (c) => {
+lastfm.get('/album/:mbid', async (c) => {
     const mbid = c.req.param('mbid')
 
     try {

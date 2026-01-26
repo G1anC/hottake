@@ -15,29 +15,36 @@ datasource db {
 }
 
 model User {
-    id             Int     @id @default(autoincrement())
-    email          String  @unique
+    id             Int      @id @default(autoincrement())
+    email          String   @unique
     name           String?
-    pseudo         String? @unique
+    pseudo         String?  @unique
     password       String
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
-    profilePicture String?
     bio            String?
-    friends        User[]  @relation("UserFriends", references: [id])
     color          String?
+    image          String?
+
+    friends        User[]   @relation("UserFriends")
+    friendOf       User[]   @relation("UserFriends")
+
     reviews        Review[]
-    favorites      Review[] @relation("FavoriteReviews")
+
+    hotTakes       String[]
+    bigFive        String[]
+    nextList       String[]
+    Listened       String[]
 }
 
 model Review {
     id          Int      @id @default(autoincrement())
-    mbid        String   @unique
+    mbid        String
     content     String?
     note        Int
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+
     author      User     @relation(fields: [authorId], references: [id])
     authorId    Int
-    favoritedBy User[] @relation("FavoriteReviews")
 }

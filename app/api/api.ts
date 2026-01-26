@@ -59,11 +59,13 @@ class Api {
         getUserById: (id: number) => this.get(`/users/${id}`),
         changeUser: (id: number, user: object) => this.put(`/users/${id}`, user),
         deleteUser: (id: number) => this.delete(`/users/${id}`),
+        uploadImage: (id: number, fileString: string) => this.post(`/users/image/${id}`, { image: fileString })
     }
 
     public reviews = {
         getReviewsByUser: (id: number) => this.get(`/users/${id}`),
         getReviewById: (id: number) => this.get(`/reviews/${id}`),
+        getReviewsByMbid: (mbid: string) => this.get(`/reviews/album/${mbid}`),
         createReview: (review: object) => this.post('/reviews/', review),
         updateReview: (id: number, review: object) => this.put(`/reviews/${id}`, review),
         deleteReview: (id: number) => this.delete(`/reviews/${id}`),
@@ -77,7 +79,7 @@ class Api {
 
         searchAlbum: (albumName: string, artist?: string) => this.get(`/lastfm/album/search?album=${encodeURIComponent(albumName)}${artist ? `&artist=${encodeURIComponent(artist)}` : ''}`),
         getAlbumInfo: (artist: string, album: string) => this.get(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`),
-        getAlbumInfoByMbid: (mbid: string) => this.get(`/lastfm/album/mbid/${encodeURIComponent(mbid)}`),
+        getAlbumInfoByMbid: (mbid: string) => this.get(`/lastfm/album/${encodeURIComponent(mbid)}`),
     }
 }
 

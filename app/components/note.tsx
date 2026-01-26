@@ -15,8 +15,7 @@ const starColors = [
     '#E3545A', 
 ]
 
-const Note = () => {
-    const [note, setNote] = React.useState<number | null>(null);
+const NoteSetter = ({note, setNote}: {note: number, setNote: React.Dispatch<React.SetStateAction<number>>}) => {
     const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
     
     const getStarColor = (starIndex: number, isRightHalf: boolean) => {
@@ -98,4 +97,5 @@ const Note = () => {
         </div>
     )
 }
-export default Note
+
+export default NoteSetter
