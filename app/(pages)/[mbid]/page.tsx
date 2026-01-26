@@ -4,6 +4,7 @@ import React from 'react';
 import Api from '../../api/api';
 import NoteSetter from './../../components/note'
 import Nav from '@/app/components/nav';
+import { EuropaBold } from '@/app/lib/loadFont';
 
 interface AlikeAlbum {
     name: string;
@@ -273,7 +274,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
     }
 
     return (
-        <div className="h-screen w-screen relative text-white text-[10px] overflow-hidden">
+        <div className="h-screen w-screen relative text-white text-[12px] overflow-hidden">
             <Nav />
             <div className="h-120 w-full backdrop-blur-[150px] overflow-hidden" />
             <div
@@ -294,7 +295,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                 <div className="w-full h-full pt-8">
                     <div className="flex w-full justify-between items-start">
                         <div className="">
-                            <h1 className="text-6xl font-bold">{album.name}</h1>
+                            <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album.name}</h1>
                             <h2 className="text-xl mt-2">{album.artist}</h2>
                         </div>
                         <p className="ml-200">Reviews: {reviews.length}</p>

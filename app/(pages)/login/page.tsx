@@ -80,7 +80,7 @@ export default function LoginPage() {
 	}
 
 	return (
-		<div className=" h-screen text-white w-screen text-[10px] flex flex-col relative">
+		<div className=" h-screen text-white w-screen text-[12px] flex flex-col relative">
 			<div className="h-full w-full backdrop-blur-[150px] z-10 overflow-hidden" />
             <div
                 style={{
@@ -134,7 +134,7 @@ export default function LoginPage() {
 								<div className="flex flex-col gap-1 text-[8px]">
 									Name
 									<input
-										className="form-field outline-none focus:ring-1 autofill:bg-transparent autofill:text-inherit ring-white/10 px-4 py-3 rounded-md text-[10px] bg-white/5"
+										className="form-field outline-none focus:ring-1 autofill:bg-transparent autofill:text-inherit ring-white/10 px-4 py-3 rounded-md text-[12px] bg-white/5"
 										type="text"
 										placeholder="John Doe"
 										name="name"
@@ -151,7 +151,7 @@ export default function LoginPage() {
 								<div className="flex flex-col gap-1 text-[8px]">
 									Pseudo
 									<input
-										className="form-field outline-none focus:ring-1 autofill:bg-transparent autofill:text-inherit ring-white/10 px-4 py-3 rounded-md text-[10px] bg-white/5"
+										className="form-field outline-none focus:ring-1 autofill:bg-transparent autofill:text-inherit ring-white/10 px-4 py-3 rounded-md text-[12px] bg-white/5"
 										type="text"
 										placeholder="Hottaker3000"
 										name="pseudo"
@@ -170,7 +170,7 @@ export default function LoginPage() {
 						<div className="flex flex-col gap-1 text-[8px]">
 							Email
 							<input
-								className="form-field outline-none autofill:bg-transparent autofill:text-inherit focus:ring-1 ring-white/10 px-4 py-3 rounded-md text-[10px] bg-white/5"
+								className="form-field outline-none autofill:bg-transparent autofill:text-inherit focus:ring-1 ring-white/10 px-4 py-3 rounded-md text-[12px] bg-white/5"
 								type="email"
 								placeholder="example@gmail.com"
 								name="email"
@@ -185,7 +185,7 @@ export default function LoginPage() {
 						<div className="flex flex-col gap-1 text-[8px]">
 							Password
 							<input
-								className="form-field outline-none focus:ring-1 ring-white/10 px-4 py-3 rounded-md text-[10px] bg-white/5"
+								className="form-field outline-none focus:ring-1 ring-white/10 px-4 py-3 rounded-md text-[12px] bg-white/5"
 								type="password"
 								placeholder="Password"
 								name="password"

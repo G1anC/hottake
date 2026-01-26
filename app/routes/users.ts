@@ -31,10 +31,11 @@ export async function authenticateUser(c: Context): Promise<number | null> {
         const jwt = await jwtVerify(token, key, {
             algorithms: ['HS256']
         })
-        console.log(jwt.payload.id)
-        return jwt.payload.id as number
+        console.log(jwt.payload.userId)
+        return jwt.payload.userId as number
 
     } catch (e: any) {
+        console.error("Auth error:", e)
         return null
     }
 }
@@ -177,16 +178,17 @@ users.post('/create', async (c) => {
         if (!user)
             return
         const expires = new Date(Date.now() + 60 * 24 * 60 * 60 * 10000)
-        // TODO: change from email to id for the jwt
         const session = await encryptSession({userId: user.id, expires})
 
         setCookie(c, "session", session, {
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Lax',
+            path: '/',
         })
 
         return c.json(user, 200)
     } catch (e: unknown) {
-        // TODO: change to 402 for the 
         if (e instanceof Error && 'code' in e && e.code === 'P2002')
             return c.json({ message: 'Email already exists' }, 409)
         return c.json({ message: 'Internal server error' }, 500)
@@ -214,20 +216,17 @@ users.post('/login', async (c) => {
         return c.json({ message: 'Invalid email or password' }, 401)
     
     const expires = new Date(Date.now() + 60 * 24 * 60 * 60 * 10000)
-    const session = await encryptSession({ email, expires })
+    const session = await encryptSession({ userId: user.id, expires })
 
     setCookie(c, "session", session, {
         httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Lax',
+        path: '/',
     })
 
     return c.json({ message: 'Login successful' })
 })
-
-users.post('/logout', async (c) => {
-    deleteCookie(c, "session")
-    return c.json({ message: 'Logged out successfully.' })
-})
-
 
 // get a user by id
 users.get('/:id', async (c) => {

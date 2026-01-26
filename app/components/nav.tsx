@@ -116,7 +116,7 @@ const Nav = () => {
     }
 
     return (
-        <nav className="w-full z-50 px-8 py-6 text-white bg-[#0c0c0e] h-13 flex items-center justify-center text-[11px]">
+        <nav className="w-full z-50 px-8 py-6 text-white bg-[#0c0c0e] h-13 flex items-center justify-center text-[12px]">
             <div className="flex space-x-8 w-full">
                 <a href="/" className="hover:underline"><img src="/logo.svg" className="h-5" /></a>
                 <div className="flex space-x-5">
