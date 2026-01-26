@@ -89,6 +89,8 @@ export default function Profile() {
         e.stopPropagation();
     };
 
+    
+
     const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         handleFile(file || null);
