@@ -2,9 +2,12 @@
 
 import React from 'react';
 import Api from '../../api/api';
-import NoteSetter from './../../components/note'
+import { NoteSetter, NoteDisplay, starColors } from './../../components/note'
 import Nav from '@/app/components/nav';
 import { EuropaBold } from '@/app/lib/loadFont';
+import { stringToFile } from '@/app/lib/images.service';
+import { User, Review } from '@/app/lib/types';
+
 
 interface AlikeAlbum {
     name: string;
@@ -13,20 +16,6 @@ interface AlikeAlbum {
     mbid?: string;
     url?: string;
     [key: string]: any;
-}
-
-type User = {
-    id: number;
-    email: string;
-    name?: string;
-    pseudo?: string;
-};
-
-type Review = {
-    author: User,
-    mbid: string,
-    content: string,
-    note: number,
 }
 
 export default function MbidPage({ params }: { params: Promise<{ mbid: string }> }) {
@@ -55,11 +44,6 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
         const fetchMe = async () => {
             try {
                 const me = await api.users.getMe() as { body: User };
-
-                if (!me.body) {
-                    window.location.href = "/login";
-                    return;
-                }
                 setUser(me.body);
             } catch {
                 window.location.href = "/login";
@@ -97,11 +81,11 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
         })()
     }, [album, api]);
 
+
+
+
     const LeftSide = React.useCallback(() => {
         if (!album) return null;
-        
-        
-
         return (
             <div className="-mt-50 ">
                 <img className="rounded-lg border border-white/20" src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="700" />
@@ -134,20 +118,72 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
         )
     }, [album]);
 
+
+
+
+    interface ReviewItemProps {
+        review: Review,
+        index: number
+    }
+    
+    const ReviewItem = ({ review, index }: ReviewItemProps) => {
+        const [pfpUrl, setPfpUrl] = React.useState<string>('');
+        
+        React.useEffect(() => {
+            const loadImage = async () => {
+                if (review.author?.image) {
+                    const imageFile = await stringToFile(review.author.image);
+                    console.log(imageFile);
+                    
+                    // Créer une URL à partir du File
+                    const url = URL.createObjectURL(imageFile);
+                    setPfpUrl(url);
+                    
+                    // Nettoyer l'URL quand le composant se démonte
+                    return () => URL.revokeObjectURL(url);
+                }
+            };
+            
+            loadImage();
+        }, [review.author?.image]);
+    
+        if (!pfpUrl) {
+            return null; // ou un skeleton/placeholder
+        }
+        
+        return (
+            <div className="p-4 w-full rounded-lg">
+                <div className="w-full flex justify-between">
+                    <div className="flex gap-8 items-center">
+                        <img 
+                            src={pfpUrl} 
+                            alt="Profile" 
+                            className="w-12 h-12 rounded-full object-cover" 
+                        />
+                        <p className="text-4xl">
+                            {review.author?.pseudo ?? review.author?.email}
+                        </p>
+                    </div>
+                    
+                    <div 
+                        style={{color: starColors[review.note - 1]}}
+                        className="flex gap-4 text-3xl items-center">
+                        <NoteDisplay note={review.note} />
+                        {review.note}
+                    </div>
+                </div>
+                <p className="text-white/50 mt-4 ml-20">{review.content}</p>
+            </div>
+        );
+    };
+
     const Reviews = React.useCallback(() => {
         return (
             <div className="w-full mb-24 mt-20 h-full">
-                <h3 className="text-2xl font-bold mb-4">Reviews</h3>
-                <div className="space-y-6 h-full overflow-y-auto pr-4">
+                <div className="space-y-6 h-full overflow-y-auto">
                     {reviews.length > 0 ? (
                         reviews.map((review, index) => (
-                            <div key={index} className="bg-white/10 p-4 rounded-lg">
-                                <h4 className="font-semibold mb-2">Note: {(review.note) as number / 2}</h4>
-                                <p className="text-sm">{review.content}</p>
-                                <p className="text-xs mt-2">
-                                    {review.author.pseudo ?? review.author.email}
-                                </p>
-                            </div>
+                            <ReviewItem key={review.id ?? index} review={review} index={index} />
                         ))
                     ) : (
                         <p>No reviews available.</p>
@@ -157,6 +193,9 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
         );
     }, [reviews]);
 
+
+
+    
     const RightSide = React.useCallback(() => {
         const [note, setNote] = React.useState<number>(0);
         const [content, setContent] = React.useState("");

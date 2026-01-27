@@ -1,18 +1,25 @@
 import { Hono, Context } from 'hono'
 import prisma from '../api/prisma';
 import { SignJWT, jwtVerify } from 'jose';
-import bcrypt from 'bcrypt';
 import 'dotenv/config'
 import {
-    deleteCookie,
     getCookie,
     setCookie,
   } from 'hono/cookie'
+import bcrypt from 'bcrypt';
 
 const saltRounds = 10;
-const users = new Hono();
+
+export const users = new Hono();
 const key = new TextEncoder().encode(process.env.JWT_SECRET!);
 
+
+
+
+
+//                                              //
+// GET USER                                     //
+//                                              //
 
 export async function encryptSession(payload: any) {
     return await new SignJWT(payload)
@@ -94,65 +101,45 @@ users.get('/', async (c) => {
 })
 
 
+// get a user by id
+users.get('/:id', async (c) => {
+    const id = Number(c.req.param('id'))
 
+    const user = await prisma.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            email: true,
+            image: true,
+            name: true,
+            pseudo: true,
+            createdAt: true,
+            bio: true,
+            color: true,
+            reviews: true,
+            bigFive: true,
+            Listened: true,
+            nextList: true,
+            hotTakes: true,
+            friends: true,
+            friendOf: true
+        },
+    })
 
-
-// // add a friend to the user's friend list
-// users.post('/:id/add-friend', async (c) => {
-//     const userId = Number(c.req.param('id'))
-//     const { friendId } = await c.req.json()
-//     const user = await prisma.user.update({
-//         where: { id: userId },
-//         data: {
-//             friends: {
-//                 connect: { id: friendId }
-//             },
-//         },
-//     })
-//     return c.json(user)
-// })
-
-// // remove a friend from the user's friend list
-// users.post('/:id/remove-friend', async (c) => {
-//     const userId = Number(c.req.param('id'))
-//     const { friendId } = await c.req.json()
-//     const user = await prisma.user.update({
-//         where: { id: userId },
-//         data: {
-//             friends: {
-//                 disconnect: { id: friendId }
-//             },
-//         },
-//     })
-//     return c.json(user)
-// })
-
-// // get friends list of a user
-// users.get('/:id/friends', async (c) => {
-//     const userId = Number(c.req.param('id'))
-//     const user = await prisma.user.findUnique({
-//         where: { id: userId },
-//         select: {
-//             friends: {
-//                 select: {
-//                     id: true,
-//                     name: true,
-//                     pseudo: true,
-//                     profilePicture: true,
-//                     reviews: true,
-//                 }
-//             },
-//         },
-//     })
-//     if (!user) {
-//         return c.json({ message: 'User not found' }, 404)
-//     }
-//     return c.json(user.friends)
-// })
+    if (!user) {
+        return c.json({ message: 'User not found' }, 404)
+    }
+    
+    return c.json(user)
+})
 
 
 
 
+
+//                                              //
+// CONNECT USER                                 //
+//                                              //
 
 // create a new user
 users.post('/create', async (c) => {
@@ -228,40 +215,17 @@ users.post('/login', async (c) => {
     return c.json({ message: 'Login successful' })
 })
 
-// get a user by id
-users.get('/:id', async (c) => {
-    const id = Number(c.req.param('id'))
-
-    const user = await prisma.user.findUnique({
-        where: { id },
-        select: {
-            id: true,
-            email: true,
-            image: true,
-            name: true,
-            pseudo: true,
-            createdAt: true,
-            bio: true,
-            color: true,
-            reviews: true,
-            bigFive: true,
-            Listened: true,
-            nextList: true,
-            hotTakes: true,
-            friends: true,
-            friendOf: true
-        },
-    })
-
-    if (!user) {
-        return c.json({ message: 'User not found' }, 404)
-    }
-    
-    return c.json(user)
-})
 
 
 
+
+
+
+//                                              //
+// CHANGE USER                                  //
+//                                              //
+
+// add image to user
 users.post('/image/:id', async (c) => {
     const id: number | null = await authenticateUser(c)
 
@@ -279,8 +243,7 @@ users.post('/image/:id', async (c) => {
 })
 
 
-
-// change a user
+// change a user secondary info
 users.put('/:id', async (c) => {
     const id = Number(c.req.param('id'))
     const { name, bio, color } = await c.req.json()
@@ -307,4 +270,69 @@ users.delete('/:id', async (c) => {
 })
 
 
-export default users;
+
+
+
+
+
+//                                              //
+// MANAGE FRIENDS                               //
+//                                              //
+
+// // add a friend to the user's friend list
+// users.post('/:id/add-friend', async (c) => {
+//     const userId = Number(c.req.param('id'))
+//     const { friendId } = await c.req.json()
+//     const user = await prisma.user.update({
+//         where: { id: userId },
+//         data: {
+//             friends: {
+//                 connect: { id: friendId }
+//             },
+//         },
+//     })
+//     return c.json(user)
+// })
+
+// // remove a friend from the user's friend list
+// users.post('/:id/remove-friend', async (c) => {
+//     const userId = Number(c.req.param('id'))
+//     const { friendId } = await c.req.json()
+//     const user = await prisma.user.update({
+//         where: { id: userId },
+//         data: {
+//             friends: {
+//                 disconnect: { id: friendId }
+//             },
+//         },
+//     })
+//     return c.json(user)
+// })
+
+// // get friends list of a user
+// users.get('/:id/friends', async (c) => {
+//     const userId = Number(c.req.param('id'))
+//     const user = await prisma.user.findUnique({
+//         where: { id: userId },
+//         select: {
+//             friends: {
+//                 select: {
+//                     id: true,
+//                     name: true,
+//                     pseudo: true,
+//                     profilePicture: true,
+//                     reviews: true,
+//                 }
+//             },
+//         },
+//     })
+//     if (!user) {
+//         return c.json({ message: 'User not found' }, 404)
+//     }
+//     return c.json(user.friends)
+// })
+
+
+
+
+

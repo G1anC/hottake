@@ -54,6 +54,7 @@ reviews.get('/album/:mbid', async (c) => {
                         pseudo: true,
                         email: true,
                         name: true,
+                        image: true,
                     },
                 },
                 mbid: true,

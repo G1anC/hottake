@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/vercel'
 
-import users from '../../routes/users'
+import { users } from '../../routes/users'
 import reviews from '../../routes/reviews'
 import lastfm from '@/app/routes/lastfm'
 

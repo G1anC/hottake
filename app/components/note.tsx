@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-const starColors = [
+export const starColors = [
     '#6C82DD', 
     '#659CE3',
     '#67BBDA',
@@ -15,7 +15,81 @@ const starColors = [
     '#E3545A', 
 ]
 
-const NoteSetter = ({note, setNote}: {note: number, setNote: React.Dispatch<React.SetStateAction<number>>}) => {
+export const NoteDisplay = ({ note }: { note: number }) => {
+    note--;
+    const getStarColor = (starIndex: number, isRightHalf: boolean) => {
+        const currentColorIndex = starIndex * 2 + (isRightHalf ? 1 : 0);
+        
+        if (note === null || note === undefined) {
+            return '#ffffff33';
+        }
+        
+        return starColors[Math.min(note, starColors.length - 1)];
+    };
+    
+    const getStarOpacity = (starIndex: number, isRightHalf: boolean) => {
+        const currentColorIndex = starIndex * 2 + (isRightHalf ? 1 : 0);
+        
+        if (note === null || note === undefined) {
+            return 1;
+        }
+        
+        if (currentColorIndex <= note) {
+            return 1;
+        }
+        
+        return 0.2;
+    };
+    
+    return (
+        <div className="flex">
+            {[0, 1, 2, 3, 4].map((starIndex) => (
+                <div 
+                    key={starIndex}
+                    className="relative px-1"
+                    style={{ width: 24, height: 24 }}
+                >
+                    {/* Moitié gauche */}
+                    <div 
+                        className="absolute inset-0"
+                        style={{ 
+                            clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)',
+                            opacity: getStarOpacity(starIndex, false),
+                            backgroundColor: getStarColor(starIndex, false),
+                            WebkitMaskImage: 'url(/star.svg)',
+                            WebkitMaskSize: 'contain',
+                            WebkitMaskRepeat: 'no-repeat',
+                            WebkitMaskPosition: 'center',
+                            maskImage: 'url(/star.svg)',
+                            maskSize: 'contain',
+                            maskRepeat: 'no-repeat',
+                            maskPosition: 'center'
+                        }}
+                    />
+                    {/* Moitié droite */}
+                    <div 
+                        className="absolute inset-0"
+                        style={{ 
+                            clipPath: 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)',
+                            opacity: getStarOpacity(starIndex, true),
+                            backgroundColor: getStarColor(starIndex, true),
+                            WebkitMaskImage: 'url(/star.svg)',
+                            WebkitMaskSize: 'contain',
+                            WebkitMaskRepeat: 'no-repeat',
+                            WebkitMaskPosition: 'center',
+                            maskImage: 'url(/star.svg)',
+                            maskSize: 'contain',
+                            maskRepeat: 'no-repeat',
+                            maskPosition: 'center'
+                        }}
+                    />
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export const NoteSetter = ({note, setNote}: {note: number, setNote: React.Dispatch<React.SetStateAction<number>>}) => {
     const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
     
     const getStarColor = (starIndex: number, isRightHalf: boolean) => {
@@ -98,4 +172,3 @@ const NoteSetter = ({note, setNote}: {note: number, setNote: React.Dispatch<Reac
     )
 }
 
-export default NoteSetter
