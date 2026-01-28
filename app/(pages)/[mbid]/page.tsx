@@ -305,7 +305,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                                 return (
                                     <a 
                                         key={alikeAlbum.mbid || index} 
-                                        href={alikeAlbum.mbid ? `/mbid/${alikeAlbum.mbid}` : '#'}
+                                        href={alikeAlbum.mbid ? `/${alikeAlbum.mbid}` : '#'}
                                         className="flex flex-col items-center mt-2 hover:opacity-80 transition-opacity"
                                     >
                                         {imageUrl && (
@@ -366,7 +366,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
     return (
         <div className="h-screen w-screen relative text-white text-[12px] flex flex-col overflow-hidden">
             <Nav />
-            <div className="h-140 absolute w-full backdrop-blur-[150px] overflow-hidden" />
+            <div className="h-1/5 absolute w-full backdrop-blur-[150px] overflow-hidden" />
             <div
                 style={{
                     backgroundImage: `url(${album.image[album.image.length - 1]['#text']})`,
@@ -374,9 +374,9 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                     backgroundPosition: 'center',
                     filter: 'blur(20px)',
                     zIndex: -1,
-                }} className="absolute top-0 left-0 h-140 w-full"
+                }} className="absolute top-0 left-0 h-1/5 w-full"
             />
-            <div className="absolute w-full h-full top-140 bg-[#0c0c0e]" />
+            <div className="absolute w-full h-full top-1/5 bg-[#0c0c0e]" />
 
             <div className="z-10 h-full flex gap-20 px-40">
                 <LeftSide />
