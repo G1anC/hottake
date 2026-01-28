@@ -117,6 +117,7 @@ const Nav = () => {
             )
         }
 
+        
     const ResultList = () => {
         return (
             <div className="absolute top-12 mt-2 bg-[#181819] rounded-lg shadow-lg z-50">
