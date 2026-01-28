@@ -1,21 +1,5 @@
 
-- apprendre le language de comments TODO
-
-
-
-
-
 # BACK
-
-routes users:
-- les favorits,
-- les listened,
-- les nextlists
-- les hottakes
-- Big fives
-
-
-fichier Types.ts dans utils pour enlever tous les any
 
 images:
 - passer un algorythme de compression lossless juste avant le stockage
@@ -24,14 +8,15 @@ images:
 localStorage:
 - Keep le user et ses meta donnees dans le local storage comnme ca j'ai pas a faire une requete a chaque fois que j'ai besoin des infos
 
-JWT:
-- rajouter les web tokens pour eviter la pdp Hitler
 
+
+# MIDDLEWARE
+
+- verification JWT dans le middleware pour tout centraliser
+- et faire des checks directement dans le middle pour pas que ca passe dans le back et centralister le check d'id 
 
 
 # FRONT
-
-
 
 - changer l'input de recherche
 - faire le site en responsive !important
@@ -45,7 +30,6 @@ page artiste:
 
 page [mbid]:
 - verifier si les etoiles prennent bien les .5
-- changer la couleur de la review
 - fix les albums alike et albums du meme artiste
 - checker a mettre pour voir si le user est connecté et lui lancer une modal pour qu'il puisse le faire
 
@@ -55,7 +39,13 @@ page discover:
 
 page profile:
 - changer le profile
-- reviews
 - meilleurs albums
 - supprimer ses reviews
 - les lists
+
+utiliser zod pour m'occuper des forms et assurer la bonne transmission d'objects formatés
+
+
+
+
+mettre vidoq et l'AREA vers le compte de github de Mazouz dans Facile.studio

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import Api from '../../api/api';
+import Api, { PlaylistType } from '../../api/api';
 import { NoteSetter, NoteDisplay, starColors } from './../../components/note'
 import Nav from '@/app/components/nav';
 import { EuropaBold } from '@/app/lib/loadFont';
@@ -81,38 +81,48 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
         })()
     }, [album, api]);
 
-
-
-
     const LeftSide = React.useCallback(() => {
-        if (!album) return null;
+        if (!album)
+            return null;
+    
         return (
-            <div className="-mt-50 ">
-                <img className="rounded-lg border border-white/20" src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="700" />
-                <div className="mt-8 px-8 h-full overflow-y-scroll">
-                    <div className="flex justify-between items-center">
+            <div 
+                style={{ height: "calc(100vh - 200px)" }}
+                className="mt-30 gap-8 flex flex-col overflow-hidden"
+            >
+                <img 
+                    className="rounded-lg border border-white/20 shrink-0" 
+                    src={album.image[album.image.length - 1]['#text']} 
+                    alt="Album Art" 
+                    width="800" 
+                />
+                
+                <div className="flex flex-col gap-0 min-h-0 flex-1">
+                    <div className="px-8 flex justify-between items-center shrink-0">
                         <div className="flex space-x-4"><p>@</p><p>Track</p></div>
                         <div className="flex space-x-4"><p>Flame</p><p className="text-end w-24">Length</p></div>
                     </div>
-
-                    <div className='w-full h-px bg-white/10 my-6'></div>
-
-                    {album.tracks.track.map((track: any, index: number) => {
-                        return (
-                            <div key={index} className="flex justify-between mt-4 items-center">
-                                <div className="flex space-x-4">
-                                    <p>{index + 1}</p>
-                                    <p>{track.name}</p>
+    
+                    <div className='w-full h-px bg-white/10 mt-6 shrink-0'></div>
+                    
+                    <div className="px-8 flex-1 overflow-y-auto flex flex-col gap-8 mt-8 min-h-0">
+                        {album.tracks.track.map((track: any, index: number) => {
+                            return (
+                                <div key={index} className="flex justify-between items-center shrink-0">
+                                    <div className="flex space-x-4">
+                                        <p>{index + 1}</p>
+                                        <p>{track.name}</p>
+                                    </div>
+                                    <div className="flex space-x-4">
+                                        <p>{Math.floor(Math.random() * 6)}.{Math.floor(Math.random() * 10)}</p>
+                                        <p className="text-end w-24">
+                                            {`${Math.floor(track.duration / 60)}:${(track.duration % 60) < 10 ? '0' + (track.duration % 60) : (track.duration % 60)}`}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex space-x-4">
-                                    <p>{Math.floor(Math.random() * 6)}.{Math.floor(Math.random() * 10)}</p>
-                                    <p className="text-end w-24">
-                                        {`${Math.floor(track.duration / 60)}:${(track.duration % 60) < 10 ? '0' + (track.duration % 60) : (track.duration % 60)}`}
-                                    </p>
-                                </div>
-                            </div>
-                        )
-                    } )}
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
         )
@@ -221,8 +231,19 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
             }
         };
 
+        const addToPlayList = async (type: PlaylistType) => {
+            try {
+                const response = await api.users.addToPlaylist(mbid, type)
+
+                if (!response)
+                    throw("couldnt handle the addition")
+            } catch (e) {
+                console.error
+            }
+        }
+
         return (
-            <div className="w-120 pb-20 h-full flex flex-col justify-between shrink-0">
+            <div className="w-160 pb-20 h-full flex flex-col justify-between shrink-0">
                 <div className="h-1/2">
                     <div className="flex gap-1 items-end">
                         <div className="bg-[#181819] py-2 px-3 rounded-t-md h-14 w-auto">
@@ -230,17 +251,17 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                         </div>
 
                         <div className="rounded-lg bg-[#181819] mb-1 px-6 py-3 flex justify-between w-full">
-                            <button onClick={() => {}} className="text-center px-3 flex flex-col items-center">
+                            <button onClick={() => {addToPlayList("listened")}} className="text-center px-3 flex flex-col items-center">
                                 <img src="/listenedNo.svg" className="w-12 hover:opacity-50 opacity-25 duration-100 hover:scale-105 transition-all" />
                                 <p className="mt-2">Listened</p>
                             </button>
 
-                            <button onClick={() => {}} className="text-center px-3 flex flex-col items-center">
+                            <button onClick={() => {addToPlayList("nextList")}} className="text-center px-3 flex flex-col items-center">
                                 <img src="/nextlist.svg" className="w-12" />
                                 <p className="mt-2">Nextlist</p>
                             </button>
 
-                            <button onClick={() => {}} className="text-center px-3 flex flex-col items-center">
+                            <button onClick={() => {addToPlayList("hotTakes")}} className="text-center px-3 flex flex-col items-center">
                                 <img src="/nextlist.svg" className="w-12" />
                                 <p className="mt-2">Hottake</p>
                             </button>
@@ -313,9 +334,9 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
     }
 
     return (
-        <div className="h-screen w-screen relative text-white text-[12px] overflow-hidden">
+        <div className="h-screen w-screen relative text-white text-[12px] flex flex-col overflow-hidden">
             <Nav />
-            <div className="h-120 w-full backdrop-blur-[150px] overflow-hidden" />
+            <div className="h-140 absolute w-full backdrop-blur-[150px] overflow-hidden" />
             <div
                 style={{
                     backgroundImage: `url(${album.image[album.image.length - 1]['#text']})`,
@@ -323,15 +344,14 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                     backgroundPosition: 'center',
                     filter: 'blur(20px)',
                     zIndex: -1,
-                }} className="absolute top-0 left-0 h-120 w-full"
+                }} className="absolute top-0 left-0 h-140 w-full"
             />
+            <div className="absolute w-full h-full top-140 bg-[#0c0c0e]" />
 
-            <div style={{
-                height: "calc(100vh - 532px)"
-            }} className="relative z-10 bg-[#0c0c0e] flex gap-20 px-32">
+            <div className="z-10 h-full flex gap-20 px-40">
                 <LeftSide />
 
-                <div className="w-full h-full pt-8">
+                <div className="w-full h-full pt-136">
                     <div className="flex w-full justify-between items-start">
                         <div className="">
                             <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album.name}</h1>
@@ -342,7 +362,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                         <p className="">Playcount: {album.playcount ? album.playcount : 'N/A'}</p>
                     </div>
 
-                    <div className="flex h-full gap-20">
+                    <div className="flex h-full gap-32">
                         <Reviews />
                         <RightSide />
                     </div>

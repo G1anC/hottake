@@ -7,6 +7,7 @@ import {
     setCookie,
   } from 'hono/cookie'
 import bcrypt from 'bcrypt';
+import { PlaylistType } from '../api/api';
 
 const saltRounds = 10;
 
@@ -32,13 +33,14 @@ export async function encryptSession(payload: any) {
 export async function authenticateUser(c: Context): Promise<number | null> {
     try {
         const token = getCookie(c, "session")
-        console.log(token)
+
         if (!token)
             return null
+        
         const jwt = await jwtVerify(token, key, {
             algorithms: ['HS256']
         })
-        console.log(jwt.payload.userId)
+
         return jwt.payload.userId as number
 
     } catch (e: any) {
@@ -68,7 +70,7 @@ users.get('/me', async (c) => {
                 color: true,
                 reviews: true,
                 bigFive: true,
-                Listened: true,
+                listened: true,
                 nextList: true,
                 hotTakes: true,
                 friends: true,
@@ -118,7 +120,7 @@ users.get('/:id', async (c) => {
             color: true,
             reviews: true,
             bigFive: true,
-            Listened: true,
+            listened: true,
             nextList: true,
             hotTakes: true,
             friends: true,
@@ -245,6 +247,99 @@ users.post('/image/:id', async (c) => {
 
 // change a user secondary info
 users.put('/:id', async (c) => {
+    const id: number | null = await authenticateUser(c)
+
+        if (!id)
+            throw("Invalid session")
+
+    const { name, bio, color } = await c.req.json()
+
+    const user = await prisma.user.update({
+        where: { id },
+        data: {
+            name,
+            bio,
+            color,
+        },
+    })
+    return c.json(user)
+})
+
+
+// delete a user
+users.delete('/me', async (c) => {
+    const id: number | null = await authenticateUser(c)
+
+        if (!id)
+            throw("Invalid session")
+
+    await prisma.user.delete({
+        where: { id },
+    })
+    return c.json({ message: 'User deleted successfully.' })
+})
+
+
+
+
+
+
+
+
+
+//                                              //
+// CHANGE PLAYLISTS                             //
+//                                              //
+
+// add image to user
+users.put('/playlist/:type', async (c) => {
+    try {
+        const id: number | null = await authenticateUser(c)
+
+        if (!id)
+            return
+    
+        const { mbid, type }: { mbid: string, type: PlaylistType } = await c.req.json()
+
+        const user = await prisma.user.update({
+            where: {
+                id,
+                NOT: {
+                    [type]: {
+                        has: mbid
+                    }
+                }
+             },
+            data: {[type]: {push: mbid}}
+        })
+        console.log(user)
+        return c.json(user)
+    } catch (e) {
+        console.error(e)
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// change a user secondary info
+users.put('/:id', async (c) => {
     const id = Number(c.req.param('id'))
     const { name, bio, color } = await c.req.json()
 
@@ -268,10 +363,6 @@ users.delete('/:id', async (c) => {
     })
     return c.json({ message: 'User deleted successfully.' })
 })
-
-
-
-
 
 
 

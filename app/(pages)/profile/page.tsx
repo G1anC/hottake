@@ -32,18 +32,29 @@ import { EuropaBold } from "@/app/lib/loadFont";
 </button>
 */
 
+
 export default function Profile() {
     const api = new Api('/api');
     const [user, setUser] = React.useState<any>(null);
     const [image, setImage] = React.useState<any>(null);
     const [reviews, setReviews] = React.useState<Review[]>([]);
     const [imagesFromAlbums, setImagesFromAlbums] = React.useState<any[]>([]);
+    const [listenedAlbums, setListenedAlbums] = React.useState<any[]>([]);
+    const [hotTakesAlbums, setHotTakesAlbums] = React.useState<any[]>([]);
+    const [nextListAlbums, setNextListdAlbums] = React.useState<any[]>([]);
+    const [bigFiveAlbums, setBigFiveAlbums] = React.useState<any[]>([]);
 
     React.useEffect(() => {
         (async () => {
             const res = await api.get('/users/me') as any;
+
             setUser(res.body);
-    
+
+            // res.body.listened)
+            setHotTakesAlbums(res.body.hotTakes)
+            setNextListdAlbums(res.body.hotTakes)
+            setBigFiveAlbums(res.body.hotTakes)
+
             if (res.body?.reviews) {
                 setReviews(res.body.reviews);
                 
@@ -191,7 +202,38 @@ export default function Profile() {
                         <div className="w-full h-full">
                             <Reviews />
                         </div>
-                        <div className="w-240 h-full"></div>
+                        <div className="w-240 h-full flex flex-col justify-between min-gap-8">
+                                <div className="">
+                                    <div className="w-full flex justify-between">
+                                        <p className="">Big Five</p>
+                                        <button className="text-white/50 hover:text-white">More</button>
+                                    </div>
+                                    <div className="w-full mt-2 flex space-x-1">
+                                        {listenedAlbums.slice(0, 5).map((album: any, index: number) => (
+                                            <div key={index} className="flex flex-col items-center mt-2">
+                                                <p>{album.name}</p>
+                                                <p>{album.mbid}</p>
+                                                <p>{album.artist}</p>
+                                                <img src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="mb-6">
+                                    <div className="w-full flex justify-between">
+                                        <p className=""></p>
+                                        <button className="text-white/50 hover:text-white">More</button>
+                                    </div>
+                                    <div className="w-full mt-2 mb-24 flex space-x-1">
+                                        {/* {album && [1, 2, 3, 4, 5].map((_, index) => (
+                                            <div key={index} className="flex flex-col items-center mt-2">
+                                                <img src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
+                                            </div>
+                                        ))} */}
+                                    </div>
+                            </div>
+                        </div>
                     </div>
 
                     

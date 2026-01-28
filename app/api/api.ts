@@ -2,6 +2,8 @@ import { log } from "node:console"
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
+export type PlaylistType = "hotTakes" | "listened" | "bigFive" | "nextList"
+
 export interface ValidationError {
     message: string
     path: string[]
@@ -59,6 +61,7 @@ class Api {
         getUserById: (id: number) => this.get(`/users/${id}`),
         changeUser: (id: number, user: object) => this.put(`/users/${id}`, user),
         deleteUser: (id: number) => this.delete(`/users/${id}`),
+        addToPlaylist: (mbid: string, type: PlaylistType) => this.put(`/users/playlist/${type}`, {mbid: mbid, type: type} ),
         uploadImage: (id: number, fileString: string) => this.post(`/users/image/${id}`, { image: fileString })
     }
 

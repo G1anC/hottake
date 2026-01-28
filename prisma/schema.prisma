@@ -31,10 +31,10 @@ model User {
 
     reviews        Review[]
 
-    hotTakes       String[]
-    bigFive        String[]
-    nextList       String[]
-    Listened       String[]
+    hotTakes       String[] @default([])
+    bigFive        String[] @default([])
+    nextList       String[] @default([])
+    listened       String[] @default([])
 }
 
 model Review {
