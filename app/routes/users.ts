@@ -312,7 +312,6 @@ users.put('/playlist/:type', async (c) => {
              },
             data: {[type]: {push: mbid}}
         })
-        console.log(user)
         return c.json(user)
     } catch (e) {
         console.error(e)

@@ -66,7 +66,6 @@ export default function Profile() {
                             if (!album.image)
                                 return null
                             const image = album.image[album.image.length - 1]['#text']
-                            console.log("yeah" + image)
                             return image
                         } catch (error) {
                             console.error('Error fetching album:', error)

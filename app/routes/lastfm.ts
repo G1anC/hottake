@@ -98,6 +98,52 @@ lastfm.get('/album/:mbid', async (c) => {
     }
 })
 
+lastfm.get('/album/:artist/:album/similar', async (c) => {
+    const artist = decodeURIComponent(c.req.param('artist'))
+    
+    try {
+        // 1. Récupère les artistes similaires
+        const similarArtistsData = await lastfmFetch({
+            method: 'artist.getsimilar',
+            artist,
+            limit: '3',
+        })
+        
+        if (similarArtistsData.error) {
+            return c.json({ 
+                message: 'Artist not found', 
+                error: similarArtistsData.message 
+            }, 404)
+        }
+        
+        const similarArtists = similarArtistsData.similarartists?.artist || []
+        
+        // 2. Pour chaque artiste similaire, récupère son top album
+        const albumPromises = similarArtists.map(async (similarArtist: any) => {
+            try {
+                const topAlbumsData = await lastfmFetch({
+                    method: 'artist.gettopalbums',
+                    artist: similarArtist.name,
+                    limit: '1',
+                })
+                return topAlbumsData.topalbums?.album?.[0]
+            } catch (e) {
+                return null
+            }
+        })
+        
+        const albums = (await Promise.all(albumPromises)).filter(Boolean)
+        
+        return c.json(albums)
+        
+    } catch (e: any) {
+        console.error('Error details:', e)
+        return c.json({ 
+            message: 'Error fetching similar albums',
+            error: e.message 
+        }, 500)
+    }
+})
 
 
 
@@ -131,7 +177,7 @@ lastfm.get('/artist/search', async (c) => {
 })
 
 
-// get artist info by MBID
+// get artist info by MBID 
 lastfm.get('/artist/mbid/:mbid', async (c) => {
     const mbid = c.req.param('mbid')
 
@@ -154,7 +200,7 @@ lastfm.get('/artist/mbid/:mbid', async (c) => {
 
 // get artist info
 lastfm.get('/artist/:artist', async (c) => {
-    const artist = c.req.param('artist')
+    const artist = decodeURIComponent(c.req.param('artist'))
 
     try {
         const data = await lastfmFetch({
@@ -174,19 +220,39 @@ lastfm.get('/artist/:artist', async (c) => {
 
 
 lastfm.get('/artist/:artist/top-albums', async (c) => {
-    const artist = c.req.param('artist')
+    const artist = decodeURIComponent(c.req.param('artist'))
+    
     try {
         const data = await lastfmFetch({
             method: 'artist.gettopalbums',
             artist,
-            limit: '10',
+            limit: '5'
         })
+                
         if (data.error) {
-            return c.json({ message: 'Artist not found' }, 404)
+            return c.json({ 
+                message: 'Artist not found', 
+                error: data.message 
+            }, 404)
         }
-        return c.json(data.topalbums?.album || [])
-    } catch (e) {
-        return c.json({ message: 'Error fetching top albums' }, 500)
+        
+        const albums = data.topalbums?.album || []
+        
+        if (albums.length === 0) {
+            return c.json({ 
+                message: 'No albums found for this artist',
+                artist 
+            }, 200)
+        }
+        
+        return c.json(albums)
+        
+    } catch (e: any) {
+        console.error('Error details:', e) // Debug
+        return c.json({ 
+            message: 'Error fetching top albums',
+            error: e.message 
+        }, 500)
     }
 })
 

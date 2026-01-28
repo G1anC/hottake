@@ -49,11 +49,9 @@ export default function Profile() {
             return;
         }
         const fileString = JSON.stringify(file)
-        console.log(fileString)
         api.users.uploadImage(user.id, fileString)
     };
     
-    console.log("before: " + (user && user.image))
 
     return (
         <div className="h-screen w-screen text-white">
