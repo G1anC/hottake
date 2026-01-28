@@ -18,9 +18,7 @@ localStorage:
 
 # FRONT
 
-- changer l'input de recherche
 - faire le site en responsive !important
-- faire fonctionner le profile de la navbar
 
 page settings
 
