@@ -83,6 +83,7 @@ class Api {
         searchAlbum: (albumName: string, artist?: string) => this.get(`/lastfm/album/search?album=${encodeURIComponent(albumName)}${artist ? `&artist=${encodeURIComponent(artist)}` : ''}`),
         getAlbumInfo: (artist: string, album: string) => this.get(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`),
         getAlbumInfoByMbid: (mbid: string) => this.get(`/lastfm/album/${encodeURIComponent(mbid)}`),
+        getSimilarAlbums: (artist: string, album: string) => this.get(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}/similar`)
     }
 }
 

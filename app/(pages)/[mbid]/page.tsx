@@ -24,7 +24,8 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
     const [album, setAlbum] = React.useState<any>(null);
     const [reviews, setReviews] = React.useState<Review[]>([])
     const [user, setUser] = React.useState<User | null>(null);
-    const [albumsAlike, setAlbumsAlike] = React.useState<AlikeAlbum[]>([]);
+    const [albumsAlike, setAlbumsAlike] = React.useState<any[]>([]);
+    const [similarAlbums, setSimilarAlbums] = React.useState<any[]>([])
 
     // Fetch album info
     React.useEffect(() => {
@@ -71,10 +72,13 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
         
         (async () => {
             try {
-                const albumsAlikeRes = await api.lastfm.getArtistTopAlbums(album.artist);
-                const topalbums = (albumsAlikeRes?.body as any)?.topalbums;
-                const alikeAlbums: AlikeAlbum[] = topalbums && Array.isArray(topalbums['album']) ? topalbums['album'] : [];
-                setAlbumsAlike(alikeAlbums);
+                const topAlbumsReponse = await api.lastfm.getArtistTopAlbums(album.artist);
+                const top = (topAlbumsReponse?.body as any) || [];                
+                setAlbumsAlike(top);
+
+                const similarAlbumsResponse = await api.lastfm.getSimilarAlbums(album.artist, album.name)
+                const similar = (similarAlbumsResponse?.body as any) || [];                
+                setSimilarAlbums(similar);
             } catch (e) {
                 console.error('Error fetching similar albums:', e);
             }
@@ -143,13 +147,8 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
             const loadImage = async () => {
                 if (review.author?.image) {
                     const imageFile = await stringToFile(review.author.image);
-                    console.log(imageFile);
-                    
-                    // Créer une URL à partir du File
                     const url = URL.createObjectURL(imageFile);
                     setPfpUrl(url);
-                    
-                    // Nettoyer l'URL quand le composant se démonte
                     return () => URL.revokeObjectURL(url);
                 }
             };
@@ -210,7 +209,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
         const [note, setNote] = React.useState<number>(0);
         const [content, setContent] = React.useState("");
         const [valid, setValid] = React.useState(false);
-
+    
         const handleSubmit = async (e: React.FormEvent) => {
             e.preventDefault();
     
@@ -230,18 +229,22 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                     console.error("The review couldn't be created")
             }
         };
-
+    
         const addToPlayList = async (type: PlaylistType) => {
             try {
                 const response = await api.users.addToPlaylist(mbid, type)
-
+    
                 if (!response)
                     throw("couldnt handle the addition")
             } catch (e) {
                 console.error
             }
         }
-
+    
+        const getAlbumImage = (albumData: AlikeAlbum, size: 'small' | 'medium' | 'large' | 'extralarge' = 'extralarge') => {
+            return albumData?.image?.find((img) => img.size === size)?.['#text'] || '';
+        };
+    
         return (
             <div className="w-160 pb-20 h-full flex flex-col justify-between shrink-0">
                 <div className="h-1/2">
@@ -249,18 +252,18 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                         <div className="bg-[#181819] py-2 px-3 rounded-t-md h-14 w-auto">
                             <NoteSetter note={note} setNote={setNote} />
                         </div>
-
+    
                         <div className="rounded-lg bg-[#181819] mb-1 px-6 py-3 flex justify-between w-full">
                             <button onClick={() => {addToPlayList("listened")}} className="text-center px-3 flex flex-col items-center">
                                 <img src="/listenedNo.svg" className="w-12 hover:opacity-50 opacity-25 duration-100 hover:scale-105 transition-all" />
                                 <p className="mt-2">Listened</p>
                             </button>
-
+    
                             <button onClick={() => {addToPlayList("nextList")}} className="text-center px-3 flex flex-col items-center">
                                 <img src="/nextlist.svg" className="w-12" />
                                 <p className="mt-2">Nextlist</p>
                             </button>
-
+    
                             <button onClick={() => {addToPlayList("hotTakes")}} className="text-center px-3 flex flex-col items-center">
                                 <img src="/nextlist.svg" className="w-12" />
                                 <p className="mt-2">Hottake</p>
@@ -289,41 +292,68 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                     </div>
                 </div>
                 
-                <div className="flex flex-col gap-24">
+                <div className="flex flex-col mb-12 gap-12">
                     <div className="">
                         <div className="w-full flex justify-between">
-                            <p className="">Other works from 23wa</p>
+                            <p className="">Other works from {album?.artist}</p>
                             <button className="text-white/50 hover:text-white">More</button>
                         </div>
-                        <div className="w-full mt-2 flex space-x-1">
-                            {albumsAlike.slice(0, 5).map((album: any, index: number) => (
-                                <div key={index} className="flex flex-col items-center mt-2">
-                                    <p>{album.name}</p>
-                                    <p>{album.mbid}</p>
-                                    <p>{album.artist}</p>
-                                    <img src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
-                                </div>
-                            ))}
+                        <div className="w-full mt-2 flex space-x-2">
+                            {albumsAlike && albumsAlike.slice(0, 5).map((alikeAlbum: AlikeAlbum, index: number) => {
+                                const imageUrl = getAlbumImage(alikeAlbum);
+                                
+                                return (
+                                    <a 
+                                        key={alikeAlbum.mbid || index} 
+                                        href={alikeAlbum.mbid ? `/mbid/${alikeAlbum.mbid}` : '#'}
+                                        className="flex flex-col items-center mt-2 hover:opacity-80 transition-opacity"
+                                    >
+                                        {imageUrl && (
+                                            <img 
+                                                src={imageUrl} 
+                                                alt={`${alikeAlbum.name} cover`} 
+                                                width="100" 
+                                                className="rounded-sm" 
+                                            />
+                                        )}
+                                    </a>
+                                );
+                            })}
                         </div>
                     </div>
-
-                    <div className="mb-6">
+    
+                    <div className="">
                         <div className="w-full flex justify-between">
                             <p className="">Albums you might like</p>
                             <button className="text-white/50 hover:text-white">More</button>
                         </div>
-                        <div className="w-full mt-2 mb-24 flex space-x-1">
-                            {album && [1, 2, 3, 4, 5].map((_, index) => (
-                                <div key={index} className="flex flex-col items-center mt-2">
-                                    <img src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
-                                </div>
-                            ))}
+                        <div className="w-full mt-2 flex space-x-2">
+                            {similarAlbums && similarAlbums.slice(0, 5).map((similarAlbum: AlikeAlbum, index: number) => {
+                                const imageUrl = getAlbumImage(similarAlbum);
+                                
+                                return (
+                                    <a 
+                                        key={similarAlbum.mbid || index} 
+                                        href={similarAlbum.mbid && `/${similarAlbum.mbid}` }
+                                        className="mt-2 hover:opacity-80 transition-opacity"
+                                    >
+                                        {imageUrl && (
+                                            <img 
+                                                src={imageUrl} 
+                                                alt={`${similarAlbum.name} cover`} 
+                                                width="100" 
+                                                className="rounded-sm" 
+                                            />
+                                        )}
+                                    </a>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
             </div>
         )
-    }, [album, albumsAlike, user, mbid, api]);
+    }, [album, albumsAlike, similarAlbums, user, mbid, api]);
 
     if (!album) {
         return (
@@ -351,18 +381,20 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
             <div className="z-10 h-full flex gap-20 px-40">
                 <LeftSide />
 
-                <div className="w-full h-full pt-136">
-                    <div className="flex w-full justify-between items-start">
+                <div className="w-full h-full pt-136 ">
+                    <div className="flex w-full justify-between gap-20 items-start">
                         <div className="">
                             <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album.name}</h1>
                             <h2 className="text-xl mt-2">{album.artist}</h2>
                         </div>
-                        <p className="ml-200">Reviews: {reviews.length}</p>
-                        <p className="">Listeners: {album.listeners ? album.listeners : 'N/A'}</p>
-                        <p className="">Playcount: {album.playcount ? album.playcount : 'N/A'}</p>
+                        <div className="flex gap-32">
+                            <p className="">Reviews: {reviews.length}</p>
+                            <p className="">Listeners: {album.listeners ? album.listeners : 'N/A'}</p>
+                            <p className="">Playcount: {album.playcount ? album.playcount : 'N/A'}</p>
+                        </div>
                     </div>
 
-                    <div className="flex h-full gap-32">
+                    <div className="flex h-full gap-20">
                         <Reviews />
                         <RightSide />
                     </div>

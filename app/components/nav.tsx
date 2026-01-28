@@ -95,7 +95,6 @@ const Nav = () => {
                                         </button>
                                         <button 
                                             onClick={() => {
-                                                console.log('Option 3');
                                                 setIsMenuOpen(false);
                                             }}
                                             className="">
@@ -119,7 +118,6 @@ const Nav = () => {
         }
 
     const ResultList = () => {
-        console.log(albumResults)
         return (
             <div className="absolute top-12 mt-2 bg-[#181819] rounded-lg shadow-lg z-50">
                 {Array.from(artistResults).slice(0,2).map((result, index) => (

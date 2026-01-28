@@ -28,6 +28,7 @@ page artiste:
 
 page [mbid]:
 - verifier si les etoiles prennent bien les .5
+- si le mbid est nul mettre une page 404
 - fix les albums alike et albums du meme artiste
 - checker a mettre pour voir si le user est connecté et lui lancer une modal pour qu'il puisse le faire
 
