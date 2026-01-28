@@ -1,11 +1,18 @@
-'use client';
-
 import Api from "../../api/api"
-import React, { useRef, useState, DragEvent, ChangeEvent, useEffect } from "react";
+import React from "react";
 import Nav from "@/app/components/nav";
-import { stringToFile, fileToString } from "@/app/lib/images.service";
-import { Review, User } from "@/app/lib/types";
+import { stringToFile } from "@/app/lib/images.service";
+import { Review } from "@prisma/client";
 import { EuropaBold } from "@/app/lib/loadFont";
+import { auth } from "@/app/lib/auth";
+import { headers } from "next/headers";
+import UserPicture from "./UserPicture";
+
+const getServerSession = async () => {
+    return auth.api.getSession({
+        headers: await headers(),
+    })
+};
 
 /*
 <div 
@@ -32,6 +39,7 @@ import { EuropaBold } from "@/app/lib/loadFont";
 </button>
 */
 
+<<<<<<< HEAD
 
 export default function Profile() {
     const api = new Api('/api');
@@ -85,44 +93,38 @@ export default function Profile() {
             }
         })();
     }, []);
+=======
+export default async function Profile() {
+    const api = new Api('/api');
 
+    // Server-side session fetch
+    const session = await getServerSession();
+>>>>>>> b3cda8d (feat: better-auth + radixUI implementation)
 
-    const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const file = e.dataTransfer.files[0];
-        handleFile(file);
-    };
+    let reviews: Review[] = [];
+    let imagesFromAlbums: string[] = [];
 
-    const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
+    if (session?.user?.reviews) {
+        reviews = session.user.reviews;
 
-    const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        handleFile(file || null);
-    };
-    
-    const handleFile = async (file: File | null) => {
-        if (!file)
-            return;
+        // Fetch all album images server-side
+        const images = await Promise.all(
+            reviews.map(async (review: Review) => {
+                try {
+                    const album = (await api.lastfm.getAlbumInfoByMbid(review.mbid)).body
+                    if (!album.image)
+                        return null
+                    const image = album.image[album.image.length - 1]['#text']
+                    return image
+                } catch (error) {
+                    return null
+                }
+            })
+        );
+        imagesFromAlbums = images.filter(img => img !== null) as string[];
+    }
 
-        if (!file.type.startsWith("image/")) {
-            alert("Merci de choisir une image");
-            return;
-        }
-
-        if (file.size > 1024 * 1024 * 1024) {
-            alert("Le fichier est trop volumineux (2 Go max).");
-            return;
-        }
-        const fileString = await fileToString(file)
-        api.users.uploadImage(user.id, fileString)
-    };
-
-    const Reviews = React.useCallback(() => {
-        // Filtrer les reviews qui ont un auteur
+    const Reviews = ({ reviews }: { reviews: Review[] }) => {
         
         return (
             <div className="w-full mb-24 mt-20 h-full">
@@ -141,11 +143,8 @@ export default function Profile() {
                 </div>
             </div>
         );
-    }, [reviews]);
+    }
 
-    if (!user)
-        return <div className="">Loading...</div>
-    
     return (
         <div className="h-screen w-screen text-white flex flex-col overflow-hidden">
             <Nav />
@@ -154,7 +153,7 @@ export default function Profile() {
                 
                 <div
                     style={{
-                        backgroundImage: `url(${image ? URL.createObjectURL(image) : "https://picsum.photos/200"})`,
+                        backgroundImage: `url("https://picsum.photos/200")`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         filter: 'blur(100px)',
@@ -172,14 +171,10 @@ export default function Profile() {
                     </div>
                     <div className="w-full flex justify-between space-x-8 pt-12">
                         <div className="flex items-start space-x-8">
-                            <img
-                                width={80}
-                                className="border border-white/10 aspect-square rounded-full"
-                                src={image && URL.createObjectURL(image)}
-                            />
+                            <UserPicture user={session?.user} />
                             <div className="">
-                                <h1 className={`text-8xl font-bold ${EuropaBold.className}`}>{user.pseudo}</h1>
-                                <p className="opacity-50 mt-4">{user.bio}</p>
+                                <h1 className={`text-8xl font-bold ${EuropaBold.className}`}>{session?.user?.pseudo}</h1>
+                                <p className="opacity-50 mt-4">{session?.user?.bio}</p>
                             </div>
                         </div>
                         <div className="w-full max-w-200 gap-4 flex justify-between shrink-0">
@@ -189,7 +184,7 @@ export default function Profile() {
                             </div>
                             <div className="flex gap-2">
                                 Member since:
-                                <div>{new Date(user.createdAt).toLocaleDateString('fr-FR', { 
+                                <div>{new Date(session?.user?.createdAt || '').toLocaleDateString('fr-FR', { 
                                     day: 'numeric', 
                                     month: 'long', 
                                     year: 'numeric' 
@@ -199,7 +194,7 @@ export default function Profile() {
                     </div>
                     <div className="h-full w-full flex gap-40 mt-12">
                         <div className="w-full h-full">
-                            <Reviews />
+                            <Reviews reviews={reviews} />
                         </div>
                         <div className="w-240 h-full flex flex-col justify-between min-gap-8">
                                 <div className="">
@@ -234,8 +229,6 @@ export default function Profile() {
                             </div>
                         </div>
                     </div>
-
-                    
                 </div> 
             </div>
         </div>

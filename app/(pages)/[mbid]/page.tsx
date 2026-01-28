@@ -1,27 +1,135 @@
 'use client'
 
-import React from 'react';
-import Api, { PlaylistType } from '../../api/api';
+import React, { useState } from 'react';
+import Api from '../../api/api';
 import { NoteSetter, NoteDisplay, starColors } from './../../components/note'
 import Nav from '@/app/components/nav';
 import { EuropaBold } from '@/app/lib/loadFont';
 import { stringToFile } from '@/app/lib/images.service';
-import { User, Review } from '@/app/lib/types';
+import { User, Review } from '@prisma/client';
+import { useSession } from '@/app/lib/auth-client';
+import { LastfmAlbumInfo, LastfmAlbumSummary } from '@/app/lib/types/lastfm';
 
+const RightSide = ({ album } : {
+    album: LastfmAlbumInfo["album"]
+}) => {
 
-interface AlikeAlbum {
-    name: string;
-    artist: string;
-    image: Array<{ '#text': string; size: string }>;
-    mbid?: string;
-    url?: string;
-    [key: string]: any;
-}
+    const api = React.useMemo(() => new Api('/api'), []);
+    const { data: session } = useSession();
+    const [note, setNote] = React.useState<number>(0);
+    const [content, setContent] = React.useState<string>("");
+    const [valid, setValid] = React.useState<boolean>(false);
+    const [albumsAlike, setAlbumsAlike] = React.useState<LastfmAlbumSummary[]>([]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        console.log("Submitting review:", { note, content, authorId: session?.user.id, mbid: album.mbid });
+
+        if (!session?.user)
+            return;
+        try {
+            const response = await api.reviews.createReview({
+                note,
+                content,
+                authorId: session.user.id,
+                mbid: album.mbid || '',
+            });
+    
+            setValid(response.status === 200);
+        } catch (e) {
+            if (e === 500)
+                console.error("The review couldn't be created")
+        }
+    };
+
+    return (
+        <div className="w-120 pb-20 h-full flex flex-col justify-between shrink-0">
+            <div className="h-1/2">
+                <div className="flex gap-1 items-end">
+                    <div className="bg-[#181819] py-2 px-3 rounded-t-md h-14 w-auto">
+                        <NoteSetter note={note} setNote={setNote} />
+                    </div>
+
+                    <div className="rounded-lg bg-[#181819] mb-1 px-6 py-3 flex justify-between w-full">
+                        <button onClick={() => {}} className="text-center px-3 flex flex-col items-center">
+                            <img src="/listenedNo.svg" className="w-12 hover:opacity-50 opacity-25 duration-100 hover:scale-105 transition-all" />
+                            <p className="mt-2">Listened</p>
+                        </button>
+
+                        <button onClick={() => {}} className="text-center px-3 flex flex-col items-center">
+                            <img src="/nextlist.svg" className="w-12" />
+                            <p className="mt-2">Nextlist</p>
+                        </button>
+
+                        <button onClick={() => {}} className="text-center px-3 flex flex-col items-center">
+                            <img src="/nextlist.svg" className="w-12" />
+                            <p className="mt-2">Hottake</p>
+                        </button>
+                    </div>
+                    
+                </div>
+                <div className="h-full max-h-160 flex flex-col gap-1">
+                    <textarea
+                        name="content"
+                        placeholder="Write a review..."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        className="h-full resize-none px-6 py-3 rounded-r-lg rounded-bl-lg
+                            text-start align-top outline-none bg-[#181819]"
+                    />
+                    <button
+                        onClick={handleSubmit}
+                        className={`form-field px-4 py-3 rounded-md hover:bg-[#AC2C33]
+                            ${valid ? "bg-green-600" : "bg-[#181819]"}
+                            duration-100 transition-all`}
+                        type="submit"
+                    >
+                        Submit
+                    </button>
+                </div>
+            </div>
+            
+            <div className="flex flex-col gap-24">
+                <div className="">
+                    <div className="w-full flex justify-between">
+                        <p className="">Other works from 23wa</p>
+                        <button className="text-white/50 hover:text-white">More</button>
+                    </div>
+                    <div className="w-full mt-2 flex space-x-1">
+                        {albumsAlike.slice(0, 5).map((album, index: number) => (
+                            <div key={index} className="flex flex-col items-center mt-2">
+                                <p>{album.name}</p>
+                                <p>{album.mbid}</p>
+                                <p>{album.artist}</p>
+                                <img src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="mb-6">
+                    <div className="w-full flex justify-between">
+                        <p className="">Albums you might like</p>
+                        <button className="text-white/50 hover:text-white">More</button>
+                    </div>
+                    <div className="w-full mt-2 mb-24 flex space-x-1">
+                        {album && [1, 2, 3, 4, 5].map((_, index) => (
+                            <div key={index} className="flex flex-col items-center mt-2">
+                                <img src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+};
 
 export default function MbidPage({ params }: { params: Promise<{ mbid: string }> }) {
     const { mbid } = React.use(params);
     const api = React.useMemo(() => new Api('/api'), []);
-    const [album, setAlbum] = React.useState<any>(null);
+    const [album, setAlbum] = React.useState<LastfmAlbumInfo["album"] | null>(null);
     const [reviews, setReviews] = React.useState<Review[]>([])
     const [user, setUser] = React.useState<User | null>(null);
     const [albumsAlike, setAlbumsAlike] = React.useState<any[]>([]);
@@ -35,23 +143,10 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                 if (albumInfo?.body)
                     setAlbum(albumInfo.body);
             } catch (e) {
-                console.error('Error fetching artist info by MBID:', e);
+                console.error('Error fetching album info by MBID:', e);
             }
         })()
     }, [mbid, api]);
-
-    // Fetch user
-    React.useEffect(() => {
-        const fetchMe = async () => {
-            try {
-                const me = await api.users.getMe() as { body: User };
-                setUser(me.body);
-            } catch {
-                window.location.href = "/login";
-            }
-        };
-        fetchMe();
-    }, [api]);
 
     // Fetch reviews
     React.useEffect(() => {
@@ -59,9 +154,9 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
             try {
                 const res = await api.reviews.getReviewsByMbid(mbid) as { body: Review[] };
                 if (Array.isArray(res.body))
-                    setReviews(res.body);
+                    setReviews(res.body as Review[]);
             } catch (e) {
-                console.error("j'ai rien trouvé boss", e);
+                console.error("Error fetching reviews by MBID:", e);
             }
         })();
     }, [mbid, api]);
@@ -142,8 +237,22 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
     
     const ReviewItem = ({ review, index }: ReviewItemProps) => {
         const [pfpUrl, setPfpUrl] = React.useState<string>('');
+        const api = React.useMemo(() => new Api('/api'), []);
+        const [author, setAuthor] = useState<User | null>(null);
+
+        React.useEffect(() => {
+            (async () => {
+                try {
+                    const res = await api.users.getUserById(review.authorId) as { body: User };
+                    setAuthor(res.body);
+                } catch (e) {
+                    console.error('Error fetching review author:', e);
+                }
+            })();
+        }, [review.authorId, api]);
         
         React.useEffect(() => {
+            if (!author) return;
             const loadImage = async () => {
                 if (review.author?.image) {
                     const imageFile = await stringToFile(review.author.image);
@@ -154,7 +263,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
             };
             
             loadImage();
-        }, [review.author?.image]);
+        }, [author]);
     
         if (!pfpUrl) {
             return null; // ou un skeleton/placeholder
@@ -170,7 +279,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                             className="w-12 h-12 rounded-full object-cover" 
                         />
                         <p className="text-4xl">
-                            {review.author?.pseudo ?? review.author?.email}
+                            {author?.username ? author.username : 'Unknown User'}
                         </p>
                     </div>
                     
@@ -299,7 +408,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                             <button className="text-white/50 hover:text-white">More</button>
                         </div>
                         <div className="w-full mt-2 flex space-x-2">
-                            {albumsAlike && albumsAlike.slice(0, 5).map((alikeAlbum: AlikeAlbum, index: number) => {
+                            {albumsAlike && albumsAlike.slice(0, 5).map((alikeAlbum: LastfmAlbumInfo['album'], index: number) => {
                                 const imageUrl = getAlbumImage(alikeAlbum);
                                 
                                 return (
@@ -328,13 +437,13 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                             <button className="text-white/50 hover:text-white">More</button>
                         </div>
                         <div className="w-full mt-2 flex space-x-2">
-                            {similarAlbums && similarAlbums.slice(0, 5).map((similarAlbum: AlikeAlbum, index: number) => {
+                            {similarAlbums && similarAlbums.slice(0, 5).map((similarAlbum: LastfmAlbumInfo['album'], index: number) => {
                                 const imageUrl = getAlbumImage(similarAlbum);
                                 
                                 return (
                                     <a 
                                         key={similarAlbum.mbid || index} 
-                                        href={similarAlbum.mbid && `/${similarAlbum.mbid}` }
+                                        href={similarAlbum.mbid ? `/${similarAlbum.mbid}` : '#'}
                                         className="mt-2 hover:opacity-80 transition-opacity"
                                     >
                                         {imageUrl && (

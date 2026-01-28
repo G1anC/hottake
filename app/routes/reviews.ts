@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import 'dotenv/config'
-import prisma from '../api/prisma';
+import prisma from '../lib/prisma';
 
 
 
@@ -9,7 +9,7 @@ const reviews = new Hono()
 
 // get every review of a user
 reviews.get('/users/:id', async (c) => {
-    const userId = Number(c.req.param('id'))
+    const userId = c.req.param('id')
 
     const reviews = await prisma.review.findMany({
         where: {
@@ -51,7 +51,7 @@ reviews.get('/album/:mbid', async (c) => {
                 author: {
                     select: {
                         id: true,
-                        pseudo: true,
+                        username: true,
                         email: true,
                         name: true,
                         image: true,
