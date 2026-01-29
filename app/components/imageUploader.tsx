@@ -1,22 +1,19 @@
 'use client';
 
-import Api from "../../api/api"
+import Api from "@/app/api/api"
 import React, { useRef, useState, DragEvent, ChangeEvent, useEffect } from "react";
 import Nav from "@/app/components/nav";
+import { useSession } from "@/app/lib/auth-client";
+import { useRouter } from "next/router";
 
 export default function Profile() {
     const api = new Api('/api');
-    const [user, setUser] = React.useState<any>(null);
     const [file, setFile] = React.useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const router = useRouter();
 
-
-    React.useEffect(() => {
-        (async () => {
-            const res = await api.get('/users/me')
-            setUser(res.body)
-        })()
-    }, [])
+    const {data: session} = useSession();
+    
 
     const handleDrop = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -36,7 +33,7 @@ export default function Profile() {
     };
     
     const handleFile = async (file: File | null) => {
-        if (!file)
+        if (!file || !session || !session.user)
             return;
 
         if (!file.type.startsWith("image/")) {
@@ -49,23 +46,25 @@ export default function Profile() {
             return;
         }
         const fileString = JSON.stringify(file)
-        api.users.uploadImage(user.id, fileString)
+        console.log(fileString)
+        api.users.uploadImage(session.user.id, fileString)
     };
     
+    console.log("before: " + session?.user?.image)
 
     return (
         <div className="h-screen w-screen text-white">
             <Nav />
             <div className="w-full h-full flex items-center justify-center gap-4 flex-col">
-                {user ?
+                {session ?
                 <>
                     <p>
                         Profile Page<br />
-                        Name: {user.name}<br />
-                        Email: {user.email}<br />
-                        Pseudo: {user.pseudo}<br />
+                        Name: {session?.user?.name}<br />
+                        Email: {session?.user?.email}<br />
+                        Pseudo: {session?.user?.username}<br />
                     </p>
-                    <img src={user.image && URL.createObjectURL(user.image)} />
+                    <img src={session?.user?.image || ''} />
                 </>
                     :
                     <p>
@@ -88,10 +87,7 @@ export default function Profile() {
                 </div>
 
                 <button className={"bg-red-200"} onClick={async () => {
-                    const response = await api.users.logout()
-                    //refresh the page
-                    window.location.href = '/profile';
-
+                    router.reload();
                 }}>
                     Logout
                 </button>

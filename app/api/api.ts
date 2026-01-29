@@ -1,4 +1,13 @@
-import { log } from "node:console"
+import { Review } from '@prisma/client'
+import type {
+    LastfmAlbumSearchResults,
+    LastfmAlbumInfo,
+    LastfmArtistSearchResults,
+    LastfmArtistInfo,
+    LastfmTopAlbums,
+    LastfmAlbumSummary,
+    LastfmArtistSummary
+} from '../lib/types/lastfm'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -54,36 +63,41 @@ class Api {
     }
 
     public users = {
-        register: (user: object) => this.post('/users/create', user),
-        getMe: () => this.get('/users/me'),
-        login: (email: string, password: string) => this.post('/users/login', { email, password }),
-        logout: () => this.post('/users/logout', {}),
-        getUserById: (id: number) => this.get(`/users/${id}`),
-        changeUser: (id: number, user: object) => this.put(`/users/${id}`, user),
-        deleteUser: (id: number) => this.delete(`/users/${id}`),
+        getUserById: (id: string) => this.get(`/users/${id}`),
+        changeUser: (id: string, user: object) => this.put(`/users/${id}`, user),
+        deleteUser: (id: string) => this.delete(`/users/${id}`),
+        uploadImage: (id: string, fileString: string) => this.post(`/users/image/${id}`, { image: fileString }),
         addToPlaylist: (mbid: string, type: PlaylistType) => this.put(`/users/playlist/${type}`, {mbid: mbid, type: type} ),
-        uploadImage: (id: number, fileString: string) => this.post(`/users/image/${id}`, { image: fileString })
     }
 
     public reviews = {
         getReviewsByUser: (id: number) => this.get(`/users/${id}`),
         getReviewById: (id: number) => this.get(`/reviews/${id}`),
         getReviewsByMbid: (mbid: string) => this.get(`/reviews/album/${mbid}`),
-        createReview: (review: object) => this.post('/reviews/', review),
+        createReview: (review: Omit<Review, 'id' | 'createdAt' | 'updatedAt'>) => this.post('/reviews/', review),
         updateReview: (id: number, review: object) => this.put(`/reviews/${id}`, review),
         deleteReview: (id: number) => this.delete(`/reviews/${id}`),
     }
 
     public lastfm = {
-        searchArtist: (artistName: string) => this.get(`/lastfm/artist/search?artist=${encodeURIComponent(artistName)}`),
-        getArtistInfo: (artist: string) => this.get(`/lastfm/artist/${encodeURIComponent(artist)}`),
-        getArtistInfoByMbid: (mbid: string) => this.get(`/lastfm/artist/mbid/${encodeURIComponent(mbid)}`),
-        getArtistTopAlbums: (artist: string) => this.get(`/lastfm/artist/${encodeURIComponent(artist)}/top-albums`),
+        searchArtist: (artistName: string) =>
+            this.get<LastfmArtistSummary[]>(`/lastfm/artist/search?artist=${encodeURIComponent(artistName)}`),
+        getArtistInfo: (artist: string) =>
+            this.get<LastfmArtistInfo['artist']>(`/lastfm/artist/${encodeURIComponent(artist)}`),
+        getArtistInfoByMbid: (mbid: string) =>
+            this.get<LastfmArtistInfo['artist']>(`/lastfm/artist/mbid/${encodeURIComponent(mbid)}`),
+        getArtistTopAlbums: (artist: string) =>
+            this.get<LastfmAlbumSummary[]>(`/lastfm/artist/${encodeURIComponent(artist)}/top-albums`),
 
-        searchAlbum: (albumName: string, artist?: string) => this.get(`/lastfm/album/search?album=${encodeURIComponent(albumName)}${artist ? `&artist=${encodeURIComponent(artist)}` : ''}`),
-        getAlbumInfo: (artist: string, album: string) => this.get(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`),
-        getAlbumInfoByMbid: (mbid: string) => this.get(`/lastfm/album/${encodeURIComponent(mbid)}`),
-        getSimilarAlbums: (artist: string, album: string) => this.get(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}/similar`)
+        searchAlbum: (albumName: string, artist?: string) =>
+            this.get<LastfmAlbumSummary[]>(
+                `/lastfm/album/search?album=${encodeURIComponent(albumName)}${artist ? `&artist=${encodeURIComponent(artist)}` : ''}`
+            ),
+        getAlbumInfo: (artist: string, album: string) =>
+            this.get<LastfmAlbumInfo['album']>(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}`),
+        getAlbumInfoByMbid: (mbid: string) =>
+            this.get<LastfmAlbumInfo['album']>(`/lastfm/album/${encodeURIComponent(mbid)}`),
+        getSimilarAlbums: (artist: string, album: string) => this.get<LastfmAlbumSummary[]>(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}/similar`)
     }
 }
 

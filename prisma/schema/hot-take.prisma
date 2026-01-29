@@ -1,0 +1,11 @@
+model Review {
+    id          Int      @id @default(autoincrement())
+    mbid        String
+    content     String?
+    note        Int
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    author      User     @relation(fields: [authorId], references: [id])
+    authorId    String
+}

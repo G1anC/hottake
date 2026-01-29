@@ -1,17 +1,32 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/vercel'
+import { auth } from "@/app/lib/auth";
 
 import { users } from '../../routes/users'
 import reviews from '../../routes/reviews'
 import lastfm from '@/app/routes/lastfm'
+import { HonoVariables } from './types';
 
 export const dynamic = 'force-dynamic'
 
+const app = new Hono<HonoVariables>().basePath('/api')
 
+app.use("*", async (c, next) => {
+	const session = await auth.api.getSession({ headers: c.req.raw.headers });
+  	if (!session) {
+    	c.set("user", null);
+    	c.set("session", null);
+    	await next();
+        return;
+  	}
+  	c.set("user", session.user);
+  	c.set("session", session.session);
+  	await next();
+});
 
-const app = new Hono().basePath('/api')
-
-
+app.on(["POST", "GET"], "/auth/*", (c) => {
+	return auth.handler(c.req.raw);
+});
 
 app.get('/health', (c) => {
   return c.json({ status: 'ok', timestamp: new Date().toISOString() })
@@ -25,12 +40,9 @@ app.onError((err, c) => {
 })
 
 
-
 app.route('/users', users)
 app.route('/reviews', reviews)
 app.route('/lastfm', lastfm)
-
-
 
 export const GET = handle(app)
 export const POST = handle(app)

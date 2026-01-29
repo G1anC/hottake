@@ -1,5 +1,6 @@
 export async function fileToString(file: File): Promise<string> {
-    const bytes = await file.bytes()
+    const arrayBuffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
     let binary = ""
     bytes.forEach(b => binary += String.fromCharCode(b))
     const base64 = btoa(binary);

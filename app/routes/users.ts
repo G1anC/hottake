@@ -1,91 +1,12 @@
 import { Hono, Context } from 'hono'
-import prisma from '../api/prisma';
-import { SignJWT, jwtVerify } from 'jose';
+import prisma from '../lib/prisma';
 import 'dotenv/config'
-import {
-    getCookie,
-    setCookie,
-  } from 'hono/cookie'
-import bcrypt from 'bcrypt';
-import { PlaylistType } from '../api/api';
+import { HonoVariables } from '../api/[...route]/types';
 
 const saltRounds = 10;
 
-export const users = new Hono();
-const key = new TextEncoder().encode(process.env.JWT_SECRET!);
+export const users = new Hono<HonoVariables>();
 
-
-
-
-
-//                                              //
-// GET USER                                     //
-//                                              //
-
-export async function encryptSession(payload: any) {
-    return await new SignJWT(payload)
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt()
-        .setExpirationTime('10m')
-        .sign(key)
-}
-
-export async function authenticateUser(c: Context): Promise<number | null> {
-    try {
-        const token = getCookie(c, "session")
-
-        if (!token)
-            return null
-        
-        const jwt = await jwtVerify(token, key, {
-            algorithms: ['HS256']
-        })
-
-        return jwt.payload.userId as number
-
-    } catch (e: any) {
-        console.error("Auth error:", e)
-        return null
-    }
-}
-
-// get authenticated user profile
-users.get('/me', async (c) => {
-    try {
-        const id: number | null = await authenticateUser(c)
-
-        if (!id)
-            throw("Invalid session")
-        
-        const user = await prisma.user.findUnique({
-            where: { id },
-            select: {
-                id: true,
-                email: true,
-                image: true,
-                name: true,
-                pseudo: true,
-                createdAt: true,
-                bio: true,
-                color: true,
-                reviews: true,
-                bigFive: true,
-                listened: true,
-                nextList: true,
-                hotTakes: true,
-                friends: true,
-                friendOf: true,
-            },
-        })
-        
-        if (!user)
-            return c.json({ message: 'User not found' }, 404)
-        
-        return c.json(user, 200)
-    } catch (e) {
-        return c.json({ message: 'Invalid session' }, 401)
-    }
-})
 
 
 // get all users
@@ -95,7 +16,7 @@ users.get('/', async (c) => {
             id: true,
             email: true,
             name: true,
-            pseudo: true,
+            username: true,
             createdAt: true,
         },
     })
@@ -105,16 +26,16 @@ users.get('/', async (c) => {
 
 // get a user by id
 users.get('/:id', async (c) => {
-    const id = Number(c.req.param('id'))
+    const id = c.req.param('id')
 
     const user = await prisma.user.findUnique({
         where: { id },
         select: {
             id: true,
-            email: true,
+            email: false,
             image: true,
             name: true,
-            pseudo: true,
+            username: true,
             createdAt: true,
             bio: true,
             color: true,
@@ -137,124 +58,37 @@ users.get('/:id', async (c) => {
 
 
 
-
-
-//                                              //
-// CONNECT USER                                 //
-//                                              //
-
-// create a new user
-users.post('/create', async (c) => {
-    const { email, name, password, pseudo } = await c.req.json()
-
-    if (!email || !name || !password || !pseudo)
-        return c.json({ message: 'Missing fields' }, 400)
-
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
-
-    try {
-        const user = await prisma.user.create({
-            data: {
-                email: email.toLowerCase(),
-                name,
-                pseudo,
-                password: hashedPassword
-            },
-            select: {
-                id: true
-            }
-        })
-        if (!user)
-            return
-        const expires = new Date(Date.now() + 60 * 24 * 60 * 60 * 10000)
-        const session = await encryptSession({userId: user.id, expires})
-
-        setCookie(c, "session", session, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Lax',
-            path: '/',
-        })
-
-        return c.json(user, 200)
-    } catch (e: unknown) {
-        if (e instanceof Error && 'code' in e && e.code === 'P2002')
-            return c.json({ message: 'Email already exists' }, 409)
-        return c.json({ message: 'Internal server error' }, 500)
-    }
-})
-
-
-// login a user
-users.post('/login', async (c) => {
-    const { email, password } = await c.req.json()
-    
-    if (!email || !password)
-        return c.json({ message: 'Missing fields' }, 400)
-    
-    const user = await prisma.user.findUnique({
-        where: { email: email.toLowerCase() },
-    })
-    
-    if (!user)
-        return c.json({ message: 'Invalid email or password' }, 401)
-    
-    const passwordMatch = await bcrypt.compare(password, user.password)
-    
-    if (!passwordMatch)
-        return c.json({ message: 'Invalid email or password' }, 401)
-    
-    const expires = new Date(Date.now() + 60 * 24 * 60 * 60 * 10000)
-    const session = await encryptSession({ userId: user.id, expires })
-
-    setCookie(c, "session", session, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'Lax',
-        path: '/',
-    })
-
-    return c.json({ message: 'Login successful' })
-})
-
-
-
-
-
-
-
 //                                              //
 // CHANGE USER                                  //
 //                                              //
 
 // add image to user
 users.post('/image/:id', async (c) => {
-    const id: number | null = await authenticateUser(c)
+    const user = c.get('user');
+    const id = user?.id;
 
     if (!id)
         return
 
     const { image }: { image: string } = await c.req.json()
-    const user = await prisma.user.update({
+    const updatedUser = await prisma.user.update({
         where: { id },
         data: {
             image: image
         },
     })
-    return c.json(user)
+    return c.json(updatedUser)
 })
 
 
 // change a user secondary info
-users.put('/:id', async (c) => {
-    const id: number | null = await authenticateUser(c)
-
-        if (!id)
-            throw("Invalid session")
+users.put('/me', async (c) => {
+    const user = c.get('user');
+    const id = user?.id;
 
     const { name, bio, color } = await c.req.json()
 
-    const user = await prisma.user.update({
+    const updatedUser = await prisma.user.update({
         where: { id },
         data: {
             name,
@@ -268,95 +102,12 @@ users.put('/:id', async (c) => {
 
 // delete a user
 users.delete('/me', async (c) => {
-    const id: number | null = await authenticateUser(c)
+    const user = c.get('user');
+    const id = user?.id;
 
-        if (!id)
-            throw("Invalid session")
+    if (!id)
+        return c.json({ message: 'User ID not found' }, 400);
 
-    await prisma.user.delete({
-        where: { id },
-    })
-    return c.json({ message: 'User deleted successfully.' })
-})
-
-
-
-
-
-
-
-
-
-//                                              //
-// CHANGE PLAYLISTS                             //
-//                                              //
-
-// add image to user
-users.put('/playlist/:type', async (c) => {
-    try {
-        const id: number | null = await authenticateUser(c)
-
-        if (!id)
-            return
-    
-        const { mbid, type }: { mbid: string, type: PlaylistType } = await c.req.json()
-
-        const user = await prisma.user.update({
-            where: {
-                id,
-                NOT: {
-                    [type]: {
-                        has: mbid
-                    }
-                }
-             },
-            data: {[type]: {push: mbid}}
-        })
-        return c.json(user)
-    } catch (e) {
-        console.error(e)
-    }
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// change a user secondary info
-users.put('/:id', async (c) => {
-    const id = Number(c.req.param('id'))
-    const { name, bio, color } = await c.req.json()
-
-    const user = await prisma.user.update({
-        where: { id },
-        data: {
-            name,
-            bio,
-            color,
-        },
-    })
-    return c.json(user)
-})
-
-
-// delete a user
-users.delete('/:id', async (c) => {
-    const id = Number(c.req.param('id'))
     await prisma.user.delete({
         where: { id },
     })

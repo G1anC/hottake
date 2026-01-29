@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import Nav from './components/nav'
+import "@radix-ui/themes/styles.css";
 import { EuropaRegular } from './lib/loadFont'
+import { Theme } from "@radix-ui/themes";
 
 export const metadata: Metadata = {
     title: 'HOTTAKE',
@@ -15,8 +16,10 @@ export default function RootLayout({
 }>) {
     return (
       <html lang="en">
-            <body className={`w-screen ${EuropaRegular.className} tracking-wider h-full bg-[#0c0c0e] text-[12px] p-0 m-0 overflow-hidden`}>
-                {children}
+            <body className={`w-screen ${EuropaRegular.className} tracking-wider h-full bg-[#0c0c0e] text-sm p-0 m-0 overflow-hidden`}>
+                <Theme accentColor='red'>
+                    {children}
+                </Theme>
             </body>
       </html>
     )
