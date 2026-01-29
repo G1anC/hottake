@@ -2,7 +2,6 @@
 
 import Api from "@/app/api/api";
 import { fileToString, stringToFile } from "@/app/lib/images.service";
-import { User } from "@prisma/client";
 import Image from "next/image";
 import { DragEvent, ChangeEvent, useRef, useEffect, useState } from "react";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
@@ -10,8 +9,9 @@ import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 
 
 
-const UserPicture = ({ user } : {
-    user: User | null,
+const UserPicture = ({ userId, b64Image } : {
+    userId: string,
+    b64Image: string | null,
 }) => {
     const api = new Api('/api');
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -19,13 +19,13 @@ const UserPicture = ({ user } : {
 
     useEffect(() => {
         const fetchImage = async () => {
-            if (user && user.image) {
-                const file = await stringToFile(user.image);
+            if (b64Image) {
+                const file = await stringToFile(b64Image);
                 setImage(file);
             }
         };
         fetchImage();
-    }, [user]);
+    }, [b64Image]);
 
     const handleDrop = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -45,11 +45,11 @@ const UserPicture = ({ user } : {
     };
 
     useEffect(() => {
-        console.log("User image updated: " + user?.image);
-    }, [user]);
+        console.log("User image updated: " + image);
+    }, [image]);
     
     const handleFile = async (file: File | null) => {
-        if (!file || !user)
+        if (!file || !userId)
             return;
 
         if (!file.type.startsWith("image/")) {
@@ -62,7 +62,7 @@ const UserPicture = ({ user } : {
             return;
         }
         const fileString = await fileToString(file)
-        api.users.uploadImage(user.id, fileString)
+        api.users.uploadImage(userId, fileString)
     };
 
     const handleButtonClick = () => {

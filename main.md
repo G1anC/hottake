@@ -9,7 +9,6 @@ localStorage:
 - Keep le user et ses meta donnees dans le local storage comnme ca j'ai pas a faire une requete a chaque fois que j'ai besoin des infos
 
 
-<<<<<<< HEAD
 
 # MIDDLEWARE
 
@@ -19,11 +18,6 @@ localStorage:
 
 # FRONT
 
-=======
-# FRONT
-
-- changer l'input de recherche
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation)
 - faire le site en responsive !important
 
 page settings
@@ -47,7 +41,6 @@ page profile:
 - meilleurs albums
 - supprimer ses reviews
 - les lists
-<<<<<<< HEAD
 
 utiliser zod pour m'occuper des forms et assurer la bonne transmission d'objects formatés
 
@@ -55,5 +48,3 @@ utiliser zod pour m'occuper des forms et assurer la bonne transmission d'objects
 
 
 mettre vidoq et l'AREA vers le compte de github de Mazouz dans Facile.studio
-=======
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation)

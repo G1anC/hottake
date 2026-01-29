@@ -46,17 +46,11 @@ export default function Profile() {
             return;
         }
         const fileString = JSON.stringify(file)
-<<<<<<< HEAD
-        api.users.uploadImage(user.id, fileString)
-    };
-    
-=======
         console.log(fileString)
         api.users.uploadImage(session.user.id, fileString)
     };
     
     console.log("before: " + session?.user?.image)
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation)
 
     return (
         <div className="h-screen w-screen text-white">

@@ -1,7 +1,5 @@
 import Api from "../../api/api"
-import React from "react";
 import Nav from "@/app/components/nav";
-import { stringToFile } from "@/app/lib/images.service";
 import { Review } from "@prisma/client";
 import { EuropaBold } from "@/app/lib/loadFont";
 import { auth } from "@/app/lib/auth";
@@ -14,100 +12,35 @@ const getServerSession = async () => {
     })
 };
 
-/*
-<div 
-    onDrop={handleDrop}
-    onDragOver={handleDragOver}
-    className="bg-[#181819] px-8 py-4 w-fit" id="input_field">
-    <input 
-        type="file"
-        className=""
-        id="imgfile"
-        accept="image/png, image/jpg"
-        onChange ={handleFileSelect}
-
-    />
-</div>
-
-<button className={"bg-red-200"} onClick={async () => {
-    const response = await api.users.logout()
-    //refresh the page
-    window.location.href = '/profile';
-
-}}>
-    Logout
-</button>
-*/
-
-<<<<<<< HEAD
-
-export default function Profile() {
-    const api = new Api('/api');
-    const [user, setUser] = React.useState<any>(null);
-    const [image, setImage] = React.useState<any>(null);
-    const [reviews, setReviews] = React.useState<Review[]>([]);
-    const [imagesFromAlbums, setImagesFromAlbums] = React.useState<any[]>([]);
-    const [listenedAlbums, setListenedAlbums] = React.useState<any[]>([]);
-    const [hotTakesAlbums, setHotTakesAlbums] = React.useState<any[]>([]);
-    const [nextListAlbums, setNextListdAlbums] = React.useState<any[]>([]);
-    const [bigFiveAlbums, setBigFiveAlbums] = React.useState<any[]>([]);
-
-    React.useEffect(() => {
-        (async () => {
-            const res = await api.get('/users/me') as any;
-
-            setUser(res.body);
-
-            // res.body.listened)
-            setHotTakesAlbums(res.body.hotTakes)
-            setNextListdAlbums(res.body.hotTakes)
-            setBigFiveAlbums(res.body.hotTakes)
-
-            if (res.body?.reviews) {
-                setReviews(res.body.reviews);
-                
-                // Récupérer toutes les images en parallèle
-                const images = await Promise.all(
-                        res.body.reviews.map(async (review: Review) => {
-                        try {
-                            const album: any = (await api.lastfm.getAlbumInfoByMbid(review.mbid)).body
-                            if (!album.image)
-                                return null
-                            const image = album.image[album.image.length - 1]['#text']
-                            return image
-                        } catch (error) {
-                            console.error('Error fetching album:', error)
-                            return null
-                        }
-                    })
-                )
-                
-                // Filtrer les nulls et mettre à jour le state une seule fois
-                const validImages = images.filter(img => img !== null)
-                setImagesFromAlbums(validImages)
-            }
-            
-            if (res.body?.image) {
-                const responseImage = await stringToFile(res.body.image as string);
-                setImage(responseImage);
-            }
-        })();
-    }, []);
-=======
 export default async function Profile() {
     const api = new Api('/api');
 
-    // Server-side session fetch
     const session = await getServerSession();
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation)
+
+    if (!session?.user) {
+        return (
+            <div className="h-screen w-screen flex items-center justify-center">
+                <p className="text-white text-2xl">You must be logged in to view this page.</p>
+            </div>
+        )
+    };
 
     let reviews: Review[] = [];
     let imagesFromAlbums: string[] = [];
+    const listenedAlbums = await Promise.all(
+        session.user.Listened.map(async (albumMbid: string) => {
+            try {
+                const album = (await api.lastfm.getAlbumInfoByMbid(albumMbid)).body
+                return album
+            } catch (error) {
+                return null
+            }
+        })
+    );
 
     if (session?.user?.reviews) {
         reviews = session.user.reviews;
 
-        // Fetch all album images server-side
         const images = await Promise.all(
             reviews.map(async (review: Review) => {
                 try {
@@ -171,9 +104,9 @@ export default async function Profile() {
                     </div>
                     <div className="w-full flex justify-between space-x-8 pt-12">
                         <div className="flex items-start space-x-8">
-                            <UserPicture user={session?.user} />
+                            <UserPicture userId={session.user.id} b64Image={session.user.image} />
                             <div className="">
-                                <h1 className={`text-8xl font-bold ${EuropaBold.className}`}>{session?.user?.pseudo}</h1>
+                                <h1 className={`text-8xl font-bold ${EuropaBold.className}`}>{session?.user?.username}</h1>
                                 <p className="opacity-50 mt-4">{session?.user?.bio}</p>
                             </div>
                         </div>
@@ -203,12 +136,12 @@ export default async function Profile() {
                                         <button className="text-white/50 hover:text-white">More</button>
                                     </div>
                                     <div className="w-full mt-2 flex space-x-1">
-                                        {listenedAlbums.slice(0, 5).map((album: any, index: number) => (
+                                        {listenedAlbums.slice(0, 5).map((album, index: number) => (
                                             <div key={index} className="flex flex-col items-center mt-2">
-                                                <p>{album.name}</p>
-                                                <p>{album.mbid}</p>
-                                                <p>{album.artist}</p>
-                                                <img src={album.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
+                                                <p>{album?.name}</p>
+                                                <p>{album?.mbid}</p>
+                                                <p>{album?.artist}</p>
+                                                <img src={album?.image[album.image.length - 1]['#text']} alt="Album Art" width="100" className="rounded-xs " />
                                             </div>
                                         ))}
                                     </div>

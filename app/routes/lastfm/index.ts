@@ -187,12 +187,7 @@ lastfm.get('/artist/search', async (c) => {
     }
 })
 
-<<<<<<< HEAD:app/routes/lastfm.ts
-
-// get artist info by MBID 
-=======
 // get artist info by MBID
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation):app/routes/lastfm/index.ts
 lastfm.get('/artist/mbid/:mbid', async (c) => {
     // Last.fm API: artist.getInfo
     // Required: mbid (string)
@@ -217,13 +212,9 @@ lastfm.get('/artist/mbid/:mbid', async (c) => {
 
 // get artist info by name
 lastfm.get('/artist/:artist', async (c) => {
-<<<<<<< HEAD:app/routes/lastfm.ts
-    const artist = decodeURIComponent(c.req.param('artist'))
-=======
     // Last.fm API: artist.getInfo
     // Required: artist (string)
     const artist = c.req.param('artist')
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation):app/routes/lastfm/index.ts
 
     try {
         const data: LastfmArtistInfo = await lastfmFetch({
@@ -245,14 +236,9 @@ lastfm.get('/artist/:artist', async (c) => {
 
 // get top albums for artist
 lastfm.get('/artist/:artist/top-albums', async (c) => {
-<<<<<<< HEAD:app/routes/lastfm.ts
-    const artist = decodeURIComponent(c.req.param('artist'))
-    
-=======
     // Last.fm API: artist.getTopAlbums
     // Required: artist (string), Optional: limit (number)
     const artist = c.req.param('artist')
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation):app/routes/lastfm/index.ts
     try {
         const data: LastfmTopAlbums = await lastfmFetch({
             method: 'artist.gettopalbums', // https://www.last.fm/api/show/artist.getTopAlbums
@@ -266,31 +252,10 @@ lastfm.get('/artist/:artist/top-albums', async (c) => {
                 error: data.message 
             }, 404)
         }
-<<<<<<< HEAD:app/routes/lastfm.ts
-        
-        const albums = data.topalbums?.album || []
-        
-        if (albums.length === 0) {
-            return c.json({ 
-                message: 'No albums found for this artist',
-                artist 
-            }, 200)
-        }
-        
-        return c.json(albums)
-        
-    } catch (e: any) {
-        console.error('Error details:', e) // Debug
-        return c.json({ 
-            message: 'Error fetching top albums',
-            error: e.message 
-        }, 500)
-=======
         return c.json(data.topalbums?.album as LastfmAlbumSummary[] || [])
     } catch (e) {
         console.log(e);
         return c.json({ message: 'Error fetching top albums' }, 500)
->>>>>>> b3cda8d (feat: better-auth + radixUI implementation):app/routes/lastfm/index.ts
     }
 })
 
