@@ -1,6 +1,8 @@
 
 # BACK
 
+- changer les cookies pour qu'ils ne restent pas que 5 minutes parce que ça rend vraiment fou ça
+
 images:
 - passer un algorythme de compression lossless juste avant le stockage
 - pourquoi pas deload le backend en passant avec la decompression pour l'avoir raw
@@ -32,17 +34,20 @@ page [mbid]:
 - fix les albums alike et albums du meme artiste
 - checker a mettre pour voir si le user est connecté et lui lancer une modal pour qu'il puisse le faire
 
+
 page discover:
 - creer toute l'interface sur Figma
 - recuperer les albums alike et les reviews des autres amis dessus ou de randoms
+
 
 page profile:
 - changer le profile
 - meilleurs albums
 - supprimer ses reviews
 - les lists
-
-utiliser zod pour m'occuper des forms et assurer la bonne transmission d'objects formatés
+- metytres les lists
+- faire en sorte que les big five soient des liens aussi
+- utiliser zod pour m'occuper des forms et assurer la bonne transmission d'objects formatés
 
 
 

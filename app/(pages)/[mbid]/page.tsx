@@ -156,9 +156,8 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
             loadImage();
         }, [review.author?.image]);
     
-        if (!pfpUrl) {
-            return null; // ou un skeleton/placeholder
-        }
+        if (!pfpUrl)
+            return null;
         
         return (
             <div className="p-4 w-full rounded-lg">
@@ -178,7 +177,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                         style={{color: starColors[review.note - 1]}}
                         className="flex gap-4 text-3xl items-center">
                         <NoteDisplay note={review.note} />
-                        {review.note}
+                        {review.note / 2}
                     </div>
                 </div>
                 <p className="text-white/50 mt-4 ml-20">{review.content}</p>
@@ -217,7 +216,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                 return;
             try {
                 const response = await api.reviews.createReview({
-                    note,
+                    note: note + 1,
                     content,
                     mbid,
                     authorId: user.id,
@@ -305,7 +304,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
                                 return (
                                     <a 
                                         key={alikeAlbum.mbid || index} 
-                                        href={alikeAlbum.mbid ? `/${alikeAlbum.mbid}` : '#'}
+                                        href={alikeAlbum.mbid && `/${alikeAlbum.mbid}`}
                                         className="flex flex-col items-center mt-2 hover:opacity-80 transition-opacity"
                                     >
                                         {imageUrl && (
@@ -381,7 +380,7 @@ export default function MbidPage({ params }: { params: Promise<{ mbid: string }>
             <div className="z-10 h-full flex gap-20 px-40">
                 <LeftSide />
 
-                <div className="w-full h-full pt-136 ">
+                <div className="w-full h-full pt-[19vh] ">
                     <div className="flex w-full justify-between gap-20 items-start">
                         <div className="">
                             <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album.name}</h1>
