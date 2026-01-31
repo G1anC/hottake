@@ -119,9 +119,6 @@ export default async function Profile() {
         );
     }
 
-    console.log(backgroundImage)
-    console.log('Background URL:', backgroundImage ? URL.createObjectURL(backgroundImage) : 'none');
-
 
     return (
         <div className="h-screen w-screen text-white flex flex-col overflow-hidden">            

@@ -46,7 +46,6 @@ export default function Profile() {
             return;
         }
         const fileString = JSON.stringify(file)
-        console.log(fileString)
         api.users.uploadImage(session.user.id, fileString)
     };
     

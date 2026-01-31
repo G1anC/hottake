@@ -46,7 +46,6 @@ export default async function MbidPage({ params }: MbidPageProps) {
         }
     }
 
-    console.log(album);
 
     const Stat = ({ label, value }: { label: string; value: string | number }) => (
         <div className="flex flex-col">
@@ -78,7 +77,10 @@ export default async function MbidPage({ params }: MbidPageProps) {
             <div className="absolute w-full h-full top-1/5 bg-[#0c0c0e]" />
             <div className="z-10 h-full flex gap-10 2xl:px-20 py-10">
                 <LeftSide album={album} />
-                <div className="w-full h-full 2xl:pt-30 xl:pt-40 lg:pt-60 md:pt-40 sm:pt-20 flex flex-col gap-12">
+
+                <div className="w-full h-full pt-[20vh] flex flex-col gap-4">
+
+
                     <div className="flex w-full justify-between gap-20 items-start">
                         <div className="">
                             <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album?.name}</h1>
@@ -91,7 +93,9 @@ export default async function MbidPage({ params }: MbidPageProps) {
                             <Stat label="Tracks" value={album?.tracks ? album.tracks.track.length : 'N/A'} />
                         </div>
                     </div>
-                    <div className="flex h-full gap-20 border">
+
+
+                    <div className="flex h-full gap-20">
                         <Reviews reviews={reviews} />
                         <RightSide album={album} albumsAlike={albumsAlike} similarAlbums={similarAlbums} mbid={mbid} />
                     </div>

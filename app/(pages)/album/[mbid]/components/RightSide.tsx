@@ -97,6 +97,42 @@ export default function RightSide({ album, albumsAlike, similarAlbums, mbid }: R
 		return albumData?.image?.find((img) => img.size === size)?.['#text'] || '';
 	};
 
+	const PlaylistButton = ({type}: {type: PlaylistType}) => {
+		let checker: boolean;
+		let label: string;
+
+		switch (type) {
+			case "listened":
+				checker = isListened;
+				label = "Listened";
+				break;
+			case "hotTakes":
+				checker = isHottake;
+				label = "Hottake";
+				break;
+			case "nextList":
+				checker = isNextlist;
+				label = "Nextlist";
+				break;
+			default:
+				checker = false;
+				label = "";
+		}
+
+		return (
+			<button onClick={() => { handlePlaylist(type); }} className="text-center px-3 flex flex-col items-center">
+				<Image 
+					src={"/" + label + (!checker ? "No" : "") + ".svg"} 
+					width={48} 
+					height={48} 
+					className={`w-11 duration-100 hover:scale-105 transition-all ${checker ? 'opacity-100' : 'opacity-25 hover:opacity-50'}`}
+					alt={`${label} icon`} 
+				/>
+				<p className="mt-2">{label}</p>
+			</button>
+		)
+	}
+
 	return (
 		<div className="h-full pb-12 overflow-hidden justify-between gap-8 flex flex-col shrink-0">
 			<div className="flex flex-col">
@@ -104,37 +140,10 @@ export default function RightSide({ album, albumsAlike, similarAlbums, mbid }: R
 					<div className="bg-[#181819] py-2 px-3 rounded-t-md h-14 w-auto">
 						<NoteSetter note={note} setNote={setNote} />
 					</div>
-					<div className="rounded-lg bg-[#181819] mb-1 px-6 py-6 flex justify-between gap-6">
-					<button onClick={() => { handlePlaylist('listened'); }} className="text-center px-3 flex flex-col items-center">
-						<Image 
-							src={isListened ? "/listened.svg" : "/noListened.svg"} 
-							width={48} 
-							height={48} 
-							className={`w-11 duration-100 hover:scale-105 transition-all ${isListened ? 'opacity-100' : 'opacity-25 hover:opacity-50'}`}
-							alt="listened icon" 
-						/>
-						<p className="mt-2">Listened</p>
-					</button>
-					<button onClick={() => { handlePlaylist('nextList'); }} className="text-center px-3 flex flex-col items-center">
-						<Image 
-							src={isNextlist ? "/nextlist.svg" : "/noNextList.svg"} 
-							width={48} 
-							height={48} 
-							className={`w-11 duration-100 hover:scale-105 transition-all ${isNextlist ? 'opacity-100' : 'opacity-50 hover:opacity-100'}`}
-							alt="Nextlist icon" 
-						/>
-						<p className="mt-2">Nextlist</p>
-					</button>
-					<button onClick={() => { handlePlaylist('hotTakes'); }} className="text-center px-3 flex flex-col items-center">
-						<Image 
-							src={isHottake ? "/hottake.svg" : "/noHottake.svg"} 
-							width={48} 
-							height={48} 
-							className={`w-11 duration-100 hover:scale-105 transition-all ${isHottake ? 'opacity-100' : 'opacity-50 hover:opacity-100'}`}
-							alt="Hottake icon" 
-						/>
-						<p className="mt-2">Hottake</p>
-					</button>
+					<div className="rounded-lg bg-[#181819] mb-1 px-6 py-6 w-full flex justify-between gap-6">
+						<PlaylistButton type="listened" />
+						<PlaylistButton type="nextList" />
+						<PlaylistButton type="hotTakes" />
 					</div>
 				</div>
 				<div className="flex flex-col gap-1 min-h-0">
@@ -143,7 +152,7 @@ export default function RightSide({ album, albumsAlike, similarAlbums, mbid }: R
 						placeholder="Write a review..."
 						value={content}
 						onChange={(e) => setContent(e.target.value)}
-						className="grow min-h-120 h-full resize-none px-6 py-3 w-full not-only:rounded-r-lg rounded-bl-lg text-start align-top outline-none bg-[#181819] overflow-y-auto"
+						className="grow min-h-60 h-full resize-none px-6 py-3 w-full not-only:rounded-r-lg rounded-bl-lg text-start align-top outline-none bg-[#181819] overflow-y-auto"
 					/>
 					<button
 						onClick={handleSubmit}
