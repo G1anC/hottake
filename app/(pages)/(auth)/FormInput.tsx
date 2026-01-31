@@ -7,12 +7,12 @@ type FormInputProps = {
 
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     ({ label, error, className = "", ...props }, ref) => (
-        <div className="flex flex-col gap-2 text-sm">
+        <div className="flex flex-col gap-2 text-[12px]">
             {label}
             <input
                 ref={ref}
                 className={
-                    `form-field outline-none focus:ring-1 ${error ? "ring-red-500" : "ring-white/10"} px-4 py-3 rounded-md text-sm bg-white/5` +
+                    `form-field outline-none focus:ring-1 ${error ? "ring-red-500" : "ring-white/10"} px-4 py-3 rounded-md text-[12px] bg-white/5` +
                     className
                 }
                 {...props}

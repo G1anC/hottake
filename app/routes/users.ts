@@ -2,6 +2,7 @@ import { Hono, Context } from 'hono'
 import prisma from '../lib/prisma';
 import 'dotenv/config'
 import { HonoVariables } from '../api/[...route]/types';
+import { PlaylistType } from '../api/api';
 
 const saltRounds = 10;
 
@@ -113,6 +114,94 @@ users.delete('/me', async (c) => {
     })
     return c.json({ message: 'User deleted successfully.' })
 })
+
+
+users.put('/playlist/:type', async (c) => {
+    try {
+        const user = c.get('user')
+        const id = user?.id
+        if (!id) {
+            return c.json({ error: 'Unauthorized' }, 401)
+        }
+    
+        const type = c.req.param('type') as PlaylistType
+        const { mbid }: { mbid: string } = await c.req.json()
+
+        const result = await prisma.user.updateMany({
+            where: {
+                id,
+                NOT: {
+                    [type]: {
+                        has: mbid
+                    }
+                }
+            },
+            data: { [type]: { push: mbid } }
+        })
+
+        if (result.count === 0) {
+            // Already exists or user not found
+            return c.json({ message: 'Item already in playlist or user not found' }, 201)
+        }
+
+        // Fetch updated user to return
+        const updatedUser = await prisma.user.findUnique({ where: { id } })
+        return c.json(updatedUser)
+    } catch (e) {
+        console.error(e)
+        return c.json({ error: 'Internal server error' }, 500)
+    }
+})
+
+
+users.delete('/playlist/:type', async (c) => {
+    try {
+        const user = c.get('user')
+        const id = user?.id
+        if (!id) {
+            return c.json({ error: 'Unauthorized' }, 401)
+        }
+    
+        const type = c.req.param('type') as PlaylistType
+        const { mbid }: { mbid: string } = await c.req.json()
+
+        const currentUser = await prisma.user.findUnique({ 
+            where: { id },
+            select: { 
+                hotTakes: true,
+                bigFive: true,
+                nextList: true,
+                listened: true
+            }
+        })
+
+        if (!currentUser) {
+            return c.json({ error: 'User not found' }, 404)
+        }
+        
+        const playlist = currentUser[type] || []
+        if (!playlist.includes(mbid)) {
+            return c.json({ message: 'Item not in playlist' }, 404)
+        }
+
+        const updatedPlaylist = playlist.filter(item => item !== mbid)
+
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data: { [type]: updatedPlaylist }
+        })
+
+        return c.json(updatedUser, 200)
+    } catch (e) {
+        console.error(e)
+        return c.json({ error: 'Internal server error' }, 500)
+    }
+})
+
+
+
+
+
 
 
 

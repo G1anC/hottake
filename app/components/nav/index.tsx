@@ -14,15 +14,15 @@ const Nav = () => {
     const pathname = usePathname();
 
     return (
-        <nav className="w-full z-50 relative px-8 py-6 text-white bg-[#0c0c0e] h-14 flex items-center justify-between text-sm">
+        <nav className="w-full z-50 relative px-8 py-6 text-white bg-[#0c0c0e] h-14 flex items-center justify-between text-[12px]">
             <div className="flex space-x-8 items-center">
                 <Link href="/" className="hover:underline">
                 <Image src="/logo.svg" alt="Logo" width={80} height={20} className="h-5" />
                 </Link>
-                <div className="flex space-x-5 text-sm">
-                    <Link href="/" className={`${EuropaBold.className} ${pathname === "/" ? "text-white" : "text-white/50"} hover:text-white text-sm`}>Home</Link>
-                    <Link href="/discover" className={`${EuropaBold.className} ${pathname === "/discover" ? "text-white" : "text-white/50"} hover:text-white text-sm`}>Discover</Link>
-                    <Link href="/profile" className={`${EuropaBold.className} ${pathname === "/profile" ? "text-white" : "text-white/50"} hover:text-white text-sm`}>Profile</Link>
+                <div className="flex space-x-5 text-[12px]">
+                    <Link href="/" className={`${EuropaBold.className} ${pathname === "/" ? "text-white" : "text-white/50"} hover:text-white text-[12px]`}>Home</Link>
+                    <Link href="/discover" className={`${EuropaBold.className} ${pathname === "/discover" ? "text-white" : "text-white/50"} hover:text-white text-[12px]`}>Discover</Link>
+                    <Link href="/profile" className={`${EuropaBold.className} ${pathname === "/profile" ? "text-white" : "text-white/50"} hover:text-white text-[12px]`}>Profile</Link>
                 </div>
             </div>
 

@@ -68,6 +68,8 @@ class Api {
         deleteUser: (id: string) => this.delete(`/users/${id}`),
         uploadImage: (id: string, fileString: string) => this.post(`/users/image/${id}`, { image: fileString }),
         addToPlaylist: (mbid: string, type: PlaylistType) => this.put(`/users/playlist/${type}`, {mbid: mbid, type: type} ),
+        deleteFromPlaylist: (mbid: string, type: PlaylistType) => this.put(`/users/playlist/${type}`, {mbid: mbid, type: type} ),
+
     }
 
     public reviews = {

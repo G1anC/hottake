@@ -42,7 +42,7 @@ CREATE TABLE "user" (
     "hotTakes" TEXT[],
     "bigFive" TEXT[],
     "nextList" TEXT[],
-    "Listened" TEXT[],
+    "listened" TEXT[],
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );

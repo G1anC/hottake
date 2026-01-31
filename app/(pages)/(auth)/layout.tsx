@@ -1,6 +1,6 @@
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className=" h-screen text-white w-screen text-sm flex flex-col relative">
+        <div className=" h-screen text-white w-screen text-[12px] flex flex-col relative">
 			<div className="h-full w-full backdrop-blur-[150px] z-10 overflow-hidden" />
 			<div
 				style={{

@@ -71,7 +71,7 @@ const UserPicture = ({ userId, b64Image } : {
 
     return (
         <div
-            className="relative w-[140px] h-[140px] group"
+            className="relative w-32 h-32 group"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
         >

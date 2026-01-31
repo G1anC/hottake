@@ -12,7 +12,7 @@ CREATE TABLE "User" (
     "color" TEXT,
     "image" TEXT NOT NULL,
     "nextList" TEXT[],
-    "Listened" TEXT[],
+    "listened" TEXT[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

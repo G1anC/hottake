@@ -5,7 +5,7 @@ const AuthHeader = ({
 } : {current: "login" | "register"}) => {
     return (
         <div className="mb-8">
-            <div className=" text-sm">{current === "login" ? "Log in" : "Register"}</div>
+            <div className=" text-[12px]">{current === "login" ? "Log in" : "Register"}</div>
             <span className="mt-1 opacity-50">
                 {current === "login" ? "Don't have an account ?" : "Already have an account ?"}
                 <Link

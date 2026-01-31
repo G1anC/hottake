@@ -27,7 +27,7 @@ export const auth = betterAuth({
           color: true,
           reviews: true,
           bigFive: true,
-          Listened: true,
+          listened: true,
           nextList: true,
           hotTakes: true,
           friends: true,
