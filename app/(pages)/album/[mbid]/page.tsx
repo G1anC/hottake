@@ -51,7 +51,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
     const Stat = ({ label, value }: { label: string; value: string | number }) => (
         <div className="flex flex-col">
             <p className="text-sm text-white/50">{label}</p>
-            <p className="text-lg font-semibold">{value}</p>
+            <p className="text-sm font-semibold">{value}</p>
         </div>
     );
 
@@ -64,8 +64,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
     }
 
     return (
-        <div className="h-screen w-screen relative text-white text-[12px] flex flex-col overflow-scroll">
-            <Nav />
+        <div className="h-screen w-screen relative text-white text-sm flex flex-col overflow-scroll">
             <div className="h-1/5 absolute w-full backdrop-blur-[150px] overflow-hidden" />
             <div
                 style={{
@@ -84,7 +83,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
                     <div className="flex w-full justify-between gap-20 items-start">
                         <div className="">
                             <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album?.name}</h1>
-                            <h2 className="text-xl mt-2">{album?.artist}</h2>
+                            <h2 className="text-sm mt-2">{album?.artist}</h2>
                         </div>
                         <div className="flex gap-32">
                             <Stat label="Reviews" value={reviews.length} />

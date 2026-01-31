@@ -16,14 +16,14 @@ const UserButton = () => {
             </DropdownMenu.Trigger>
             
             <DropdownMenu.Content
-            
-            className="!bg-[#181819] text-white rounded-lg z-50 !p-0 mt-2 min-w-[150px]">
+                className="bg-[#181819]! text-white rounded-lg z-50 p-0! mt-2 min-w-37.5"
+            >
                 {!session ? (
                     <DropdownMenu.Item 
                         onClick={() => {
                             router.push('/login');
                         }}
-                        className="py-2 text-left flex gap-1 hover:bg-white/5 px-6 rounded-t-lg">
+                        className="py-3 flex gap-1 hover:bg-white/5 px-6">
                         Login
                         <p className="text-white/50">or</p>
                         register
@@ -34,21 +34,21 @@ const UserButton = () => {
                             onClick={() => {
                                 router.push('/account');
                             }}
-                            className="py-2 px-6 text-left rounded-t-lg hover:bg-white/5 text-white">
+                            className="py-3 px-6 hover:bg-white/5 text-white">
                             Account
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                             onClick={() => {
                                 router.push('/settings');
                             }}
-                            className="py-2 px-6 text-left rounded-t-lg hover:bg-white/5 text-white">
+                            className="py-3 px-6 hover:bg-white/5 text-white">
                             Settings
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                             onClick={() => {
                                 signOut();
                             }}
-                            className="py-2 text-left px-6 !bg-red-400/5 !text-red-400 hover:!bg-red-400/10 rounded-b-lg">
+                            className="py-3 px-6 bg-red-400/5! text-red-400! hover:bg-red-400/20! rounded-b-lg">
                             Log out
                         </DropdownMenu.Item>
                     </div>

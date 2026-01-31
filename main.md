@@ -28,7 +28,7 @@ page artiste:
 - a creer
 
 
-page [mbid]:
+page album:
 - verifier si les etoiles prennent bien les .5
 - si le mbid est nul mettre une page 404
 - fix les albums alike et albums du meme artiste

@@ -9,12 +9,12 @@ const NavSearchBar = () => {
         return (
             <div className="absolute left-1/2 transform -translate-x-1/2 top-12 mt-2 bg-[#181819] rounded-lg shadow-lg z-50">
                 {Array.from(artistResults).slice(0,2).map((result, index) => (
-                    <a key={index} href={`/${result.mbid}`} className="block px-8 py-4 hover:bg-[#282829]">
+                    <a key={index} href={`/artist/${result.mbid}`} className="block px-8 py-4 hover:bg-[#282829]">
                         <p className="text-white text-sm">{result.name} {result.name}</p>
                     </a> 
                 ))}
                 {Array.from(albumResults).slice(0, 5).map((result, index) => (
-                    <a key={index} href={`/${result.mbid}`} className="block px-8 py-3 hover:bg-[#282829]">
+                    <a key={index} href={`/album/${result.mbid}`} className="block px-8 py-3 hover:bg-[#282829]">
                         <span className="flex gap-4 shrink-0 items-center">
                             {result.image.length > 0 && 
                             result.image[0]['#text'] !== "" &&
@@ -26,7 +26,7 @@ const NavSearchBar = () => {
                                 alt="Album Art"
                             />}
                             <p className="text-white text-sm">{result.name}</p>
-                            <p className="text-white/50 text-xs">by {result.artist}</p>
+                            <p className="text-white/50 text-sm">by {result.artist}</p>
                         </span>
                     </a>
                 ))}
