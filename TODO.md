@@ -6,6 +6,7 @@
 images:
 - passer un algorythme de compression lossless juste avant le stockage
 - pourquoi pas deload le backend en passant avec la decompression pour l'avoir raw
+- faire la route pour update le contenu de la review
 
 localStorage:
 - Keep le user et ses meta donnees dans le local storage comnme ca j'ai pas a faire une requete a chaque fois que j'ai besoin des infos
@@ -29,15 +30,18 @@ page artiste:
 
 - les stars ne sont pas responsive
 
+
+
 page album:
 - verifier si les etoiles prennent bien les .5
 - si le mbid est nul mettre une page 404
 - fix les albums alike et albums du meme artiste
 - checker a mettre pour voir si le user est connecté et lui lancer une modal pour qu'il puisse le faire
-
+- cta pour review
+- mettre sa review en premier + bouton pour l'update comme ca il n'y a qu'une seule review par user par album
 
 page discover:
-- creer toute l'interface sur Figma
+- creer toute l'interface sur Figma 
 - recuperer les albums alike et les reviews des autres amis dessus ou de randoms
 
 

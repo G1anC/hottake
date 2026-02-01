@@ -49,8 +49,6 @@ export default function Profile() {
         api.users.uploadImage(session.user.id, fileString)
     };
     
-    console.log("before: " + session?.user?.image)
-
     return (
         <div className="h-screen w-screen text-white">
             <Nav />

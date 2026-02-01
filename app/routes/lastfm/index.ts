@@ -55,7 +55,7 @@ lastfm.get('/album/search', async (c) => {
 
         return c.json(data.results?.albummatches?.album as LastfmAlbumSummary[] || [])
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return c.json({ message: 'Error searching Last.fm' }, 500)
     }
 })
@@ -80,7 +80,7 @@ lastfm.get('/album/:artist/:album', async (c) => {
 
         return c.json(data.album)
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return c.json({ message: 'Error fetching album info' }, 500)
     }
 })
@@ -101,7 +101,7 @@ lastfm.get('/album/:mbid', async (c) => {
 
         return c.json(data.album)
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return c.json({ message: 'Error fetching album info' }, 500)
     }
 })
@@ -180,7 +180,7 @@ lastfm.get('/artist/search', async (c) => {
 
         return c.json(data.results?.artistmatches?.artist as LastfmArtistSummary[] || [])
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return c.json({ message: 'Error searching Last.fm' }, 500)
     }
 })
@@ -203,7 +203,7 @@ lastfm.get('/artist/mbid/:mbid', async (c) => {
 
         return c.json(data.artist)
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return c.json({ message: 'Error fetching artist info' }, 500)
     }
 })
@@ -221,13 +221,13 @@ lastfm.get('/artist/:artist', async (c) => {
         })
 
         if (data.error) {
-            console.log('Last.fm error:', data.error);
+            console.error('Last.fm error:', data.error);
             return c.json({ message: 'Artist not found' }, 404)
         }
 
         return c.json(data.artist)
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return c.json({ message: 'Error fetching artist info' }, 500)
     }
 })
@@ -252,7 +252,7 @@ lastfm.get('/artist/:artist/top-albums', async (c) => {
         }
         return c.json(data.topalbums?.album as LastfmAlbumSummary[] || [])
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return c.json({ message: 'Error fetching top albums' }, 500)
     }
 })

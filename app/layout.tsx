@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
     return (
       <html lang="en">
-            <body className={`w-screen ${EuropaRegular.className} tracking-wider h-full bg-[#0c0c0e] text-[12px] p-0 m-0 overflow-hidden`}>
+            <body className={`w-screen ${EuropaRegular.className} tracking-wider h-screen bg-[#0c0c0e] text-[12px] p-0 m-0 overflow-hidden`}>
                 <Theme accentColor='red'>
                     <Nav />
                     {children}

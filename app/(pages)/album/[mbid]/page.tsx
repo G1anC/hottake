@@ -64,24 +64,25 @@ export default async function MbidPage({ params }: MbidPageProps) {
 
     return (
         <ModalProvider>
-            <div className="h-screen w-screen relative text-white text-[12px] flex flex-col overflow-scroll">
+            <div className="h-full w-screen relative text-white text-[12px] flex flex-col overflow-hidden">
                 <NewWriteReviewModal mbid={mbid} />
-                <div className="h-1/5 absolute w-full backdrop-blur-[150px] overflow-hidden" />
-                <div
-                    style={{
-                        backgroundImage: `url(${album?.image.find(img => img.size === 'extralarge')?.['#text'] || ''})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        zIndex: -1,
-                    }}
-                    className="absolute top-0 left-0 h-1/5 w-full"
-                />
-                <div className="absolute w-full h-full top-1/5 bg-[#0c0c0e]" />
-                <div className="z-10 h-full flex gap-10 2xl:px-20 py-10">
+                <div style={{ height: "calc(100vh - 2vh)"}} className="z-10 h-[80vh] pb-12 relative bg-[#0c0c0e] flex items-end gap-20">
+                    <div
+                        style={{
+                            backgroundImage: `url(${album?.image.find(img => img.size === 'extralarge')?.['#text'] || ''})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            zIndex: -1,
+                            height: "calc(20vh)"
+                        }}
+                        className="w-full absolute top-0 left-0"
+                    />
+                    <div className="h-[20vh] absolute w-full top-0 backdrop-blur-[150px]" />
                     <LeftSide album={album} />
 
-                    <div className="w-full h-full pt-[20vh] flex flex-col gap-4">
-                        <div className="flex w-full justify-between gap-20 items-start">
+
+                    <div style={{height: "calc(80vh - 60px)"}} className="w-full flex flex-col gap-4 h-full">
+                        <div className="flex w-full justify-between gap-20 pr-20 items-start pt-12">
                             <div className="">
                                 <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album?.name}</h1>
                                 <h2 className="text-[12px] mt-2">{album?.artist}</h2>
@@ -94,7 +95,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
                             </div>
                         </div>
 
-                        <div className="flex h-full gap-20">
+                        <div className="flex flex-1 gap-20 min-h-0 pr-20">
                             <Reviews reviews={reviews} />
                             <RightSide album={album} albumsAlike={albumsAlike} similarAlbums={similarAlbums} mbid={mbid} />
                         </div>

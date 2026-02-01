@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { NoteSetter } from '@/app/components/note';
+import { NoteSetter, starColors } from '@/app/components/note';
 import { LastfmAlbumInfo, LastfmAlbumSummary } from '@/app/lib/types/lastfm';
 import Api, { PlaylistType } from '@/app/api/api';
 import { useSession } from '@/app/lib/auth-client';
@@ -127,9 +127,15 @@ export function NewWriteReviewModal({ mbid }: {mbid: string}) {
 					disabled={!isFormValid}
 					className={`form-field px-4 py-3 rounded-md w-full mt-2 duration-100 transition-all ${
 						isFormValid 
-							? 'hover:bg-white/10 bg-[#181819] cursor-pointer' 
-							: 'bg-[#181819]/50 cursor-not-allowed opacity-50'
+							? 'hover:opacity-80 cursor-pointer' 
+							: 'cursor-not-allowed opacity-50'
 					} ${valid ? 'bg-green-600' : ''}`}
+					style={{
+						backgroundColor: `${starColors[note]}16`, // 20 in hex = ~12% opacity
+						borderColor: `${starColors[note]}40`, // 26 in hex = ~15% opacity
+						borderWidth: '1px',
+						borderStyle: 'solid'
+					}}
 					type="submit"
 				>
 					Submit
@@ -242,8 +248,8 @@ export default function RightSide({ album, albumsAlike, similarAlbums, mbid }: R
 	}
 
 	return (
-		<div className="h-full pb-12 overflow-hidden justify-between items-end gap-8 flex flex-col shrink-0">
-			<div>
+		<div className="flex flex-col justify-between items-end gap-8 shrink-0 min-h-0 h-full">
+			<div className="flex-1 min-h-0 flex flex-col justify-start">
 				<div className="flex gap-2 items-center w-full justify-end">
 					<div className="flex">
 						<div className="rounded-lg bg-[#181819] flex px-3 justify-center">
@@ -267,10 +273,13 @@ export default function RightSide({ album, albumsAlike, similarAlbums, mbid }: R
 					</button>	
 				</div>
 
-				{album.tags && album.tags.tag.length > 0 && <div className="flex w-full mt-12 justify-end gap-6">{album.tags.tag.map((tag: any) => <span>{tag.name}</span>)}</div>}
-				{album.wiki && <div className="mt-8 w-154 text-white/50 wrap-break-word text-end">{album.wiki.summary.split('<')[0].trim()}</div>}
+				{album.tags && album.tags.tag.length > 0 && <div className="flex w-full mt-12 justify-end gap-6">{album.tags.tag.map((tag: any) => <span key={tag.name}>{tag.name}</span>)}</div>}
+				{album.wiki && <div className="mt-8 w-154 text-white/50 wrap-break-word max-h-120 line-clamp-8 text-end">{album.wiki.content.split('<')[0].trim()}</div>}
+				{album.wiki && <div className="w-full flex justify-end"><button onClick={() => {}} className="bg-[#181819] outline outline-white/0 hover:outline-white/10 hover:text-white text-white/50 duration-150 transition-all mr-px px-6 py-3 rounded-lg mt-8">Read more</button></div>}
 			</div>
-			<div>
+
+
+			<div className="flex-shrink-0">
 				<div>
 					<div className="w-full flex justify-between">
 						<p className="">Other works from {album?.artist}</p>

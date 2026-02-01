@@ -16,7 +16,7 @@ export const starColors = [
 ]
 
 export const NoteDisplay = ({ note }: { note: number }) => {
-    note--;
+    note--
     const getStarColor = (starIndex: number, isRightHalf: boolean) => {
         const currentColorIndex = starIndex * 2 + (isRightHalf ? 1 : 0);
         
@@ -42,12 +42,11 @@ export const NoteDisplay = ({ note }: { note: number }) => {
     };
     
     return (
-        <div className="flex">
+        <div className="flex gap-0.5 sm:gap-1">
             {[0, 1, 2, 3, 4].map((starIndex) => (
                 <div 
                     key={starIndex}
-                    className="relative px-1"
-                    style={{ width: 24, height: 24 }}
+                    className="relative w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8"
                 >
                     {/* Moitié gauche */}
                     <div 

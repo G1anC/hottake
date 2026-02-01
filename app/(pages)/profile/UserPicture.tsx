@@ -43,10 +43,6 @@ const UserPicture = ({ userId, b64Image } : {
         const file = e.target.files?.[0];
         handleFile(file || null);
     };
-
-    useEffect(() => {
-        console.log("User image updated: " + image);
-    }, [image]);
     
     const handleFile = async (file: File | null) => {
         if (!file || !userId)

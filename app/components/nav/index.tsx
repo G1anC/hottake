@@ -14,10 +14,10 @@ const Nav = () => {
     const pathname = usePathname();
 
     return (
-        <nav className="w-full z-50 relative px-8 py-6 text-white bg-[#0c0c0e] h-14 flex items-center justify-between text-[12px]">
+        <nav className="w-full z-50 relative px-8 text-white bg-[#0c0c0e] h-14 flex items-center justify-between text-[12px]">
             <div className="flex space-x-8 items-center">
                 <Link href="/" className="hover:underline">
-                <Image src="/logo.svg" alt="Logo" width={80} height={20} className="h-5" />
+                    <Image src="/logo.svg" alt="Logo" width={80} height={20} className="h-5" />
                 </Link>
                 <div className="flex space-x-5 text-[12px]">
                     <Link href="/" className={`${EuropaBold.className} ${pathname === "/" ? "text-white" : "text-white/50"} hover:text-white text-[12px]`}>Home</Link>

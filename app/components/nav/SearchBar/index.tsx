@@ -7,7 +7,7 @@ const NavSearchBar = () => {
 
     const ResultList = () => {
         return (
-            <div className="absolute left-1/2 transform -translate-x-1/2 top-12 mt-2 bg-[#181819] rounded-lg shadow-lg z-50">
+            <div className="absolute left-1/2 transform -translate-x-1/2 top-12 mt-4 bg-[#181819] rounded-lg shadow-lg z-50">
                 {Array.from(artistResults).slice(0,2).map((result, index) => (
                     <a key={index} href={`/artist/${result.mbid}`} className="block px-8 py-4 hover:bg-[#282829]">
                         <p className="text-white text-[12px]">{result.name} {result.name}</p>
@@ -47,7 +47,7 @@ const NavSearchBar = () => {
                         onChange={handleInputChange}
                     >
                     </input>
-                    <button className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white">
+                    <button onClick={() => text.name = ""} className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white">
                         <Image src="/cross.svg" alt="Clear search" width={48} height={48} />
                     </button>
                 </div>

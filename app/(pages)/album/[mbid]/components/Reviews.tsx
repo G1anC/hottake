@@ -22,7 +22,6 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 			try {
 				const res = await api.users.getUserById(review.authorId) as { body: User };
 				setAuthor(res.body);
-				console.log(author)
 			} catch (e) {
 				console.error('Error fetching review author:', e);
 			}
@@ -44,7 +43,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
     }, [author]);
 
     return (
-		<div className="w-full rounded-lg px-8">
+		<div className="w-full rounded-lg px-3">
 			<div className="w-full flex justify-between">
 				<div className="flex gap-6 items-center">
 					<Image
@@ -60,10 +59,14 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 				</div>
 				<div
 					style={{ color: starColors[review.note - 1] }}
-					className="flex gap-4 text-3xl items-center"
+					className="flex gap-3 sm:gap-4 md:gap-6 text-base sm:text-lg md:text-xl items-center min-w-0"
 				>
-					<NoteDisplay note={review.note} />
-					{review.note / 2}
+					<div className="flex-1 min-w-0">
+						<NoteDisplay note={review.note} />
+					</div>
+					<div className="shrink-0">
+						{review.note / 2}
+					</div>
 				</div>
 			</div>
 			<p className="text-white/50 mt-4 ml-18">{review.content}</p>
@@ -74,8 +77,8 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 export default function Reviews({ reviews }: { reviews: (Review & { author: User })[] }) {
 	console.log(reviews)
 	return (
-		<div className="w-full mb-24 mt-20 h-full">
-			<div className="space-y-12 h-full overflow-y-auto">
+		<div className="w-full pt-12 flex flex-col min-h-0">
+			<div className="flex-1 space-y-12 overflow-y-auto pr-2">
 				{reviews.length > 0 ? reviews.map((review, index) => <ReviewItem key={review.id ?? index} review={review} index={index} />
 				) : (
 					<p>No reviews available.</p>
