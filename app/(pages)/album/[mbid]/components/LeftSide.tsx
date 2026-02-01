@@ -8,7 +8,7 @@ export default function LeftSide({ album }: { album: LastfmAlbumInfo["album"] })
     <div
       className="mt-30 gap-8 flex flex-col h-full"
     >
-    <div className="relative w-full  aspect-square min-w-[400px] mx-auto max-w-[95vw] lg:max-w-[1200px]">
+    <div className="relative w-full aspect-square min-w-140 mx-auto max-w-[95vw] lg:max-w-300">
       <Image
         className="rounded-lg border border-white/20 object-cover"
         src={album.image.find(img => img.size === 'extralarge')?.['#text'] || ''}

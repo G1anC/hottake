@@ -27,6 +27,7 @@ page settings
 page artiste:
 - a creer
 
+- les stars ne sont pas responsive
 
 page album:
 - verifier si les etoiles prennent bien les .5

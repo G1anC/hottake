@@ -30,7 +30,8 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
     }, [review.authorId, api]);
 
     useEffect(() => {
-		if (!author) return;
+		if (!author)
+			return;
 		const loadImage = async () => {
 			if (author.image) {
 				const imageFile = await stringToFile(author.image);
@@ -42,32 +43,28 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 		loadImage();
     }, [author]);
 
-    // if (!pfpUrl) {
-    //   	return null; // or a skeleton/placeholder
-    // }
-
     return (
 		<div className="w-full rounded-lg px-8">
 			<div className="w-full flex justify-between">
-			<div className="flex gap-6 items-center">
-				<Image
-					src={pfpUrl ? pfpUrl : "/noUser.svg"}
-					alt="Profile"
-					width={24}
-					height={24}
-					className="w-12 h-12 rounded-full object-cover"
-				/>
-				<p className="text-4xl">
-					{author?.username ? author.username : 'Unknown User'}
-				</p>
-			</div>
-			<div
-				style={{ color: starColors[review.note - 1] }}
-				className="flex gap-4 text-3xl items-center"
-			>
-				<NoteDisplay note={review.note} />
-				{review.note}
-			</div>
+				<div className="flex gap-6 items-center">
+					<Image
+						src={pfpUrl ? pfpUrl : "https://picsum.photos/200"}
+						alt="Profile"
+						width={24}
+						height={24}
+						className="w-12 h-12 rounded-full object-cover"
+					/>
+					<p className="text-4xl">
+						{author?.username ? author.username : 'Unknown User'}
+					</p>
+				</div>
+				<div
+					style={{ color: starColors[review.note - 1] }}
+					className="flex gap-4 text-3xl items-center"
+				>
+					<NoteDisplay note={review.note} />
+					{review.note / 2}
+				</div>
 			</div>
 			<p className="text-white/50 mt-4 ml-18">{review.content}</p>
 		</div>

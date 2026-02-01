@@ -58,8 +58,8 @@ class Api {
         return this.fetch<T>(url, 'PUT', body)
     }
 
-    delete<T>(url: string) {
-        return this.fetch<T>(url, 'DELETE')
+    delete<T>(url: string, body?: object) {
+        return this.fetch<T>(url, 'DELETE', body)
     }
 
     public users = {
@@ -67,8 +67,8 @@ class Api {
         changeUser: (id: string, user: object) => this.put(`/users/${id}`, user),
         deleteUser: (id: string) => this.delete(`/users/${id}`),
         uploadImage: (id: string, fileString: string) => this.post(`/users/image/${id}`, { image: fileString }),
-        addToPlaylist: (mbid: string, type: PlaylistType) => this.put(`/users/playlist/${type}`, {mbid: mbid, type: type} ),
-        deleteFromPlaylist: (mbid: string, type: PlaylistType) => this.put(`/users/playlist/${type}`, {mbid: mbid, type: type} ),
+        addToPlaylist: (mbid: string, type: PlaylistType) => this.put(`/users/playlist/${type}`, {mbid: mbid}),
+        deleteFromPlaylist: (mbid: string, type: PlaylistType) => this.delete(`/users/playlist/${type}`, {mbid: mbid}),
 
     }
 

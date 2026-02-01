@@ -5,8 +5,9 @@ import { EuropaBold } from '@/app/lib/loadFont';
 import { Review, User } from '@prisma/client';
 import { LastfmAlbumInfo, LastfmAlbumSummary } from '@/app/lib/types/lastfm';
 import LeftSide from './components/LeftSide';
-import RightSide from './components/RightSide';
+import RightSide, {NewWriteReviewModal} from './components/RightSide';
 import Reviews from './components/Reviews';
+import { ModalProvider } from './contexts/ModalContext';
 
 interface MbidPageProps {
     params: Promise<{ mbid: string }>;
@@ -46,10 +47,9 @@ export default async function MbidPage({ params }: MbidPageProps) {
         }
     }
 
-
     const Stat = ({ label, value }: { label: string; value: string | number }) => (
-        <div className="flex flex-col">
-            <p className="text-[12px] text-white/50">{label}</p>
+        <div className="flex flex-col items-end">
+            <p className="text-[10px] text-white/50">{label}</p>
             <p className="text-[12px] font-semibold">{value}</p>
         </div>
     );
@@ -63,44 +63,44 @@ export default async function MbidPage({ params }: MbidPageProps) {
     }
 
     return (
-        <div className="h-screen w-screen relative text-white text-[12px] flex flex-col overflow-scroll">
-            <div className="h-1/5 absolute w-full backdrop-blur-[150px] overflow-hidden" />
-            <div
-                style={{
-                    backgroundImage: `url(${album?.image.find(img => img.size === 'extralarge')?.['#text'] || ''})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    zIndex: -1,
-                }}
-                className="absolute top-0 left-0 h-1/5 w-full"
-            />
-            <div className="absolute w-full h-full top-1/5 bg-[#0c0c0e]" />
-            <div className="z-10 h-full flex gap-10 2xl:px-20 py-10">
-                <LeftSide album={album} />
+        <ModalProvider>
+            <div className="h-screen w-screen relative text-white text-[12px] flex flex-col overflow-scroll">
+                <NewWriteReviewModal mbid={mbid} />
+                <div className="h-1/5 absolute w-full backdrop-blur-[150px] overflow-hidden" />
+                <div
+                    style={{
+                        backgroundImage: `url(${album?.image.find(img => img.size === 'extralarge')?.['#text'] || ''})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        zIndex: -1,
+                    }}
+                    className="absolute top-0 left-0 h-1/5 w-full"
+                />
+                <div className="absolute w-full h-full top-1/5 bg-[#0c0c0e]" />
+                <div className="z-10 h-full flex gap-10 2xl:px-20 py-10">
+                    <LeftSide album={album} />
 
-                <div className="w-full h-full pt-[20vh] flex flex-col gap-4">
-
-
-                    <div className="flex w-full justify-between gap-20 items-start">
-                        <div className="">
-                            <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album?.name}</h1>
-                            <h2 className="text-[12px] mt-2">{album?.artist}</h2>
+                    <div className="w-full h-full pt-[20vh] flex flex-col gap-4">
+                        <div className="flex w-full justify-between gap-20 items-start">
+                            <div className="">
+                                <h1 className={`text-6xl font-bold ${EuropaBold.className}`}>{album?.name}</h1>
+                                <h2 className="text-[12px] mt-2">{album?.artist}</h2>
+                            </div>
+                            <div className="flex gap-32">
+                                <Stat label="Reviews" value={reviews.length} />
+                                <Stat label="Playcount" value={album?.playcount ? Number(album.playcount).toLocaleString() : 'N/A'} />
+                                <Stat label="Listeners" value={album?.listeners ? Number(album.listeners).toLocaleString() : 'N/A'} />
+                                <Stat label="Tracks" value={album?.tracks ? album.tracks.track.length : 'N/A'} />
+                            </div>
                         </div>
-                        <div className="flex gap-32">
-                            <Stat label="Reviews" value={reviews.length} />
-                            <Stat label="Playcount" value={album?.playcount ? Number(album.playcount).toLocaleString() : 'N/A'} />
-                            <Stat label="Listeners" value={album?.listeners ? Number(album.listeners).toLocaleString() : 'N/A'} />
-                            <Stat label="Tracks" value={album?.tracks ? album.tracks.track.length : 'N/A'} />
+
+                        <div className="flex h-full gap-20">
+                            <Reviews reviews={reviews} />
+                            <RightSide album={album} albumsAlike={albumsAlike} similarAlbums={similarAlbums} mbid={mbid} />
                         </div>
-                    </div>
-
-
-                    <div className="flex h-full gap-20">
-                        <Reviews reviews={reviews} />
-                        <RightSide album={album} albumsAlike={albumsAlike} similarAlbums={similarAlbums} mbid={mbid} />
                     </div>
                 </div>
             </div>
-        </div>
+        </ModalProvider>
     );
 }

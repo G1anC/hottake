@@ -69,7 +69,7 @@ lastfm.get('/album/:artist/:album', async (c) => {
 
     try {
         const data: LastfmAlbumInfo = await lastfmFetch({
-            method: 'album.getinfo', // https://www.last.fm/api/show/album.getInfo
+            method: 'album.getinfo',
             artist,
             album,
         })
@@ -87,13 +87,11 @@ lastfm.get('/album/:artist/:album', async (c) => {
 
 // get album info by MBID
 lastfm.get('/album/:mbid', async (c) => {
-    // Last.fm API: album.getInfo
-    // Required: mbid (string)
     const mbid = c.req.param('mbid')
 
     try {
         const data: LastfmAlbumInfo = await lastfmFetch({
-            method: 'album.getinfo', // https://www.last.fm/api/show/album.getInfo
+            method: 'album.getinfo',
             mbid,
         })
 
