@@ -75,7 +75,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 };
 
 interface ReviewProps {
-	userReview: Review & { author: User };
+	userReview: Review & { author: User } | null;
 	reviews: (Review & { author: User})[];
 }
 

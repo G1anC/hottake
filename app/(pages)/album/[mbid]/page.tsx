@@ -48,7 +48,8 @@ export default async function MbidPage({ params }: MbidPageProps) {
         if (Array.isArray(res.body)) {
             reviews = res.body;
             if (session && session.user) {
-                userReview = res.body.find((review) => review.authorId === session.user.id) ?? null
+                const userId = session.user.id;
+                userReview = res.body.find((review) => review.authorId === userId) ?? null;
             }
         }
     } catch (e) {
@@ -80,7 +81,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
         <ModalProvider>
             <div className="h-full w-screen relative text-white text-[12px] flex flex-col overflow-hidden">
                 <ReviewModal mbid={mbid} content={(userReview && userReview.content) ? userReview.content : ""} note={userReview ? userReview.note : 0} />
-                <div style={{ height: "calc(100vh - 2vh)"}} className="z-10 h-[80vh] pb-12 relative bg-[#0c0c0e] flex items-end gap-20">
+                <div style={{ height: "calc(100vh - 2vh)"}} className="z-10 h-[80vh] pb-14 relative bg-[#0c0c0e] flex items-end gap-20">
                     <div
                         style={{
                             backgroundImage: `url(${album?.image.find(img => img.size === 'extralarge')?.['#text'] || ''})`,
@@ -110,7 +111,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
                         </div>
 
                         <div className="flex flex-1 gap-20 min-h-0 pr-20">
-                            <Reviews reviews={reviews} userReview={userReview} />
+                            <Reviews reviews={reviews} userReview={userReview ? userReview : null} />
                             <RightSide album={album} albumsAlike={albumsAlike} similarAlbums={similarAlbums} mbid={mbid} userReview={userReview} />
                         </div>
                     </div>

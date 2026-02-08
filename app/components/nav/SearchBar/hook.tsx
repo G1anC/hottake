@@ -21,7 +21,7 @@ export const useSearchBar = () => {
 
                     if (artistResults.length > 0 || albumResults.length > 0) {
                         setArtistResults(artistResults.slice(0, 2));
-                        setAlbumResults(albumResults.slice(0, 5));
+                        setAlbumResults(albumResults.filter(album => !album.artist.includes(',')).slice(0, 5));
                     }
                 } catch (e) {
                     console.error('Error searching albums:', e)

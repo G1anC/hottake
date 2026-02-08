@@ -5,6 +5,7 @@ import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
 import UserPicture from "./UserPicture";
 import Image from "next/image";
+import { Stat } from "@/app/components/stats";
 import { NoteDisplay } from "@/app/components/note";
 
 const getServerSession = async () => {
@@ -192,24 +193,9 @@ export default async function Profile() {
 							</div>
 						</div>
 
-						<div className="w-full max-w-200 gap-4 text-md flex justify-between shrink-0">
-							<div className="flex gap-2">
-								Reviews:
-								<div>{!reviews ? "0" : reviews.length}</div>
-							</div>
-							<div className="flex gap-2">
-								Member since:
-								<div>
-									{new Date(session?.user?.createdAt || "").toLocaleDateString(
-										"fr-FR",
-										{
-											day: "numeric",
-											month: "long",
-											year: "numeric",
-										},
-									)}
-								</div>
-							</div>
+						<div className="flex gap-32">
+							<Stat label="Member since" value={(new Date(session?.user?.createdAt)).toDateString()} />
+							<Stat label="Reviews" value={reviews.length} />
 						</div>
 					</div>
 
