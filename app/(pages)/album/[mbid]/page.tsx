@@ -1,37 +1,56 @@
-import React from 'react';
 import Api from '../../../api/api';
-import Nav from '@/app/components/nav';
 import { EuropaBold } from '@/app/lib/loadFont';
 import { Review, User } from '@prisma/client';
 import { LastfmAlbumInfo, LastfmAlbumSummary } from '@/app/lib/types/lastfm';
 import LeftSide from './components/LeftSide';
-import RightSide, {NewWriteReviewModal} from './components/RightSide';
+import RightSide from './components/RightSide';
+import { ReviewModal } from './components/ReviewModal';
 import Reviews from './components/Reviews';
 import { ModalProvider } from './contexts/ModalContext';
+import { Stat } from "@/app/components/stats"
+import { auth } from "@/app/lib/auth";
+import { headers } from "next/headers";
 
 interface MbidPageProps {
     params: Promise<{ mbid: string }>;
 }
 
+
+const getServerSession = async () => {
+    return auth.api.getSession({
+        headers: await headers(),
+    });
+};
+
+
 export default async function MbidPage({ params }: MbidPageProps) {
     const { mbid } = await params;
     const api = new Api('http://localhost:3000/api');
+
+    const session = await getServerSession();
 
     let album: LastfmAlbumInfo["album"] | null = null;
     let reviews: (Review & { author: User })[] = [];
     let albumsAlike: LastfmAlbumSummary[] = [];
     let similarAlbums: LastfmAlbumSummary[] = [];
+    let userReview: Review & { author: User } | null = null
 
     try {
         const albumInfo = await api.lastfm.getAlbumInfoByMbid(mbid);
-        if (albumInfo?.body) album = albumInfo.body;
+        if (albumInfo?.body)
+            album = albumInfo.body;
     } catch (e) {
         console.error('Error fetching album info by MBID:', e);
     }
 
     try {
         const res = await api.reviews.getReviewsByMbid(mbid) as { body: (Review & { author: User })[] };
-        if (Array.isArray(res.body)) reviews = res.body;
+        if (Array.isArray(res.body)) {
+            reviews = res.body;
+            if (session && session.user) {
+                userReview = res.body.find((review) => review.authorId === session.user.id) ?? null
+            }
+        }
     } catch (e) {
         console.error("Error fetching reviews by MBID:", e);
     }
@@ -47,12 +66,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
         }
     }
 
-    const Stat = ({ label, value }: { label: string; value: string | number }) => (
-        <div className="flex flex-col items-end">
-            <p className="text-[10px] text-white/50">{label}</p>
-            <p className="text-[12px] font-semibold">{value}</p>
-        </div>
-    );
+
 
     if (!album) {
         return (
@@ -65,7 +79,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
     return (
         <ModalProvider>
             <div className="h-full w-screen relative text-white text-[12px] flex flex-col overflow-hidden">
-                <NewWriteReviewModal mbid={mbid} />
+                <ReviewModal mbid={mbid} content={(userReview && userReview.content) ? userReview.content : ""} note={userReview ? userReview.note : 0} />
                 <div style={{ height: "calc(100vh - 2vh)"}} className="z-10 h-[80vh] pb-12 relative bg-[#0c0c0e] flex items-end gap-20">
                     <div
                         style={{
@@ -96,8 +110,8 @@ export default async function MbidPage({ params }: MbidPageProps) {
                         </div>
 
                         <div className="flex flex-1 gap-20 min-h-0 pr-20">
-                            <Reviews reviews={reviews} />
-                            <RightSide album={album} albumsAlike={albumsAlike} similarAlbums={similarAlbums} mbid={mbid} />
+                            <Reviews reviews={reviews} userReview={userReview} />
+                            <RightSide album={album} albumsAlike={albumsAlike} similarAlbums={similarAlbums} mbid={mbid} userReview={userReview} />
                         </div>
                     </div>
                 </div>

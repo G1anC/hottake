@@ -6,7 +6,7 @@ export default function LeftSide({ album }: { album: LastfmAlbumInfo["album"] })
     if (!album) return null;
     return (
       	<div className="gap-12 h-full flex pl-20 py-12 justify-center flex-col">
-			<div className="relative w-full aspect-square min-w-160 mx-auto max-w-[95vw] lg:max-w-400">
+			<div className="relative w-full aspect-square min-w-200 mx-auto max-w-[95vw] lg:max-w-400">
 				<Image
 					className="rounded-lg border border-white/20 object-cover"
 					src={album.image.find(img => img.size === 'extralarge')?.['#text'] || ''}
