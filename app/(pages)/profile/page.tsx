@@ -135,7 +135,7 @@ export default async function Profile() {
 											<div className="">
 												<div className="flex items-center gap-8">
 													<h4 className="font-semibold mb-2">{album.name}</h4>
-													<h4 className="text-white/50 text-sm mb-2">{album.artist}</h4>
+													<h4 className="text-white/50 text-md mb-2">{album.artist}</h4>
 												</div>
 												<p className="text-[12px] mt-2 text-white/50">{review.content}</p>
 											</div>

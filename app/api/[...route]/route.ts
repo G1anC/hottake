@@ -5,6 +5,8 @@ import { auth } from "@/app/lib/auth";
 import { users } from '../../routes/users'
 import reviews from '../../routes/reviews'
 import lastfm from '@/app/routes/lastfm'
+import deezer from '@/app/routes/deezer';
+
 import { HonoVariables } from './types';
 
 export const dynamic = 'force-dynamic'
@@ -39,7 +41,7 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal server error' }, 500)
 })
 
-
+app.route('/deezer', deezer)
 app.route('/users', users)
 app.route('/reviews', reviews)
 app.route('/lastfm', lastfm)

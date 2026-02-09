@@ -6,8 +6,25 @@ export const useSearchBar = () => {
     const api = useMemo(() => new Api('/api'), []);
     const [albumResults, setAlbumResults] = useState<LastfmAlbumSummary[]>([]);
     const [artistResults, setArtistResults] = useState<LastfmArtistSummary[]>([]);
-    const [text, setValues] = useState({name: ""});
-    
+    const [text, setValues] = useState({ name: "" });
+
+    const removeDuplicateName = (name: string): string => {
+        const parts = name.split(' ');
+        const midpoint = Math.floor(parts.length / 2);
+
+        // Check if the name can be split into two identical halves
+        if (parts.length % 2 === 0) {
+            const firstHalf = parts.slice(0, midpoint).join(' ');
+            const secondHalf = parts.slice(midpoint).join(' ');
+
+            if (firstHalf === secondHalf) {
+                return firstHalf;
+            }
+        }
+
+        return name;
+    };
+
     useEffect(() => {
         // Debounce logic
         const handler = setTimeout(() => {
@@ -20,7 +37,13 @@ export const useSearchBar = () => {
                     const albumResults = Array.isArray(albumAlike?.body) ? albumAlike.body : [];
 
                     if (artistResults.length > 0 || albumResults.length > 0) {
-                        setArtistResults(artistResults.slice(0, 2));
+                        console.log(artistResults)
+                        setArtistResults(
+                            artistResults.slice(0, 2).map(artist => ({
+                                ...artist,
+                                name: removeDuplicateName(artist.name)
+                            }))
+                        );
                         setAlbumResults(albumResults.filter(album => !album.artist.includes(',')).slice(0, 5));
                     }
                 } catch (e) {
@@ -41,11 +64,11 @@ export const useSearchBar = () => {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
-            
+
         const { name, value } = event.target;
         setValues((values) => ({
-        ...values,
-        [name]: value
+            ...values,
+            [name]: value
         }));
     }
 

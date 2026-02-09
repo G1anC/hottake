@@ -101,6 +101,11 @@ class Api {
             this.get<LastfmAlbumInfo['album']>(`/lastfm/album/${encodeURIComponent(mbid)}`),
         getSimilarAlbums: (artist: string, album: string) => this.get<LastfmAlbumSummary[]>(`/lastfm/album/${encodeURIComponent(artist)}/${encodeURIComponent(album)}/similar`)
     }
+
+    public deezer = {
+        searchArtist: (artist: string) => 
+            this.get<any>(`/deezer/artist/search/${encodeURIComponent(artist)}/`)
+    }
 }
 
 export default Api

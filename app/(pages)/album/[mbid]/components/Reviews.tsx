@@ -59,7 +59,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 				</div>
 				<div
 					style={{ color: starColors[review.note - 1] }}
-					className="flex gap-3 sm:gap-4 md:gap-6 text-base sm:text-lg md:text-xl items-center min-w-0"
+					className="flex gap-3 sm:gap-4 md:gap-6 text-base sm:text-md md:text-md items-center min-w-0"
 				>
 					<div className="flex-1 min-w-0">
 						<NoteDisplay note={review.note} />
