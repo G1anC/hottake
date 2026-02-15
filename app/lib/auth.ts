@@ -31,7 +31,8 @@ export const auth = betterAuth({
           nextList: true,
           hotTakes: true,
           friends: true,
-          friendOf: true
+          friendOf: true,
+          tierlist: true
         },
       });
 

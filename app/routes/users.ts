@@ -4,8 +4,6 @@ import 'dotenv/config'
 import { HonoVariables } from '../api/[...route]/types';
 import { PlaylistType } from '../api/api';
 
-const saltRounds = 10;
-
 export const users = new Hono<HonoVariables>();
 
 
@@ -198,6 +196,104 @@ users.delete('/playlist/:type', async (c) => {
     }
 })
 
+
+// Add or update tierlist item
+users.post('/tierlist', async (c) => {
+    try {
+        const user = c.get('user')
+        const userId = user?.id
+        if (!userId) {
+            return c.json({ error: 'Unauthorized' }, 401)
+        }
+
+        const { mbid, note, position }: { mbid: string; note: number; position?: number } = await c.req.json()
+
+        if (!mbid || note === undefined) {
+            return c.json({ error: 'Missing mbid or note' }, 400)
+        }
+
+        // Upsert: update if exists, create if not
+        const tierListItem = await prisma.tierlistItem.upsert({
+            where: {
+                userId_mbid: {
+                    userId,
+                    mbid
+                }
+            },
+            update: {
+                note,
+                position: position ?? 0
+            },
+            create: {
+                userId,
+                mbid,
+                note,
+                position: position ?? 0
+            }
+        })
+
+        return c.json(tierListItem, 200)
+    } catch (e) {
+        console.error(e)
+        return c.json({ error: 'Internal server error' }, 500)
+    }
+})
+
+users.put('/tierlist', async (c) => {
+
+})
+
+
+// Remove tierlist item
+users.delete('/tierlist/:mbid', async (c) => {
+    try {
+        const user = c.get('user')
+        const userId = user?.id
+        if (!userId) {
+            return c.json({ error: 'Unauthorized' }, 401)
+        }
+
+        const mbid = c.req.param('mbid')
+
+        await prisma.tierlistItem.delete({
+            where: {
+                userId_mbid: {
+                    userId,
+                    mbid
+                }
+            }
+        })
+
+        return c.json({ message: 'Item removed from tierlist' }, 200)
+    } catch (e) {
+        console.error(e)
+        return c.json({ error: 'Internal server error' }, 500)
+    }
+})
+
+// Get user tierlist
+users.get('/tierlist/me', async (c) => {
+    try {
+        const user = c.get('user')
+        const userId = user?.id
+        if (!userId) {
+            return c.json({ error: 'Unauthorized' }, 401)
+        }
+
+        const tierList = await prisma.tierlistItem.findMany({
+            where: { userId },
+            orderBy: [
+                { note: 'desc' },
+                { position: 'asc' }
+            ]
+        })
+
+        return c.json(tierList, 200)
+    } catch (e) {
+        console.error(e)
+        return c.json({ error: 'Internal server error' }, 500)
+    }
+})
 
 
 

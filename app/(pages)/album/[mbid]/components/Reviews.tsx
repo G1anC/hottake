@@ -3,7 +3,8 @@
 import Api from '../../../../api/api';
 import { stringToFile } from '@/app/lib/images.service';
 import { User, Review } from '@prisma/client';
-import { NoteDisplay, starColors } from '@/app/components/note';
+import { NoteDisplay } from '@/app/components/note';
+import { starColors } from '@/app/components/starColors';
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 
@@ -43,7 +44,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 	}, [author]);
 
 	return (
-		<div className="w-full rounded-lg px-3">
+		<div className="w-full rounded-lg pt-8 px-3">
 			<div className="w-full flex justify-between">
 				<div className="flex gap-6 items-center">
 					<Image
@@ -65,7 +66,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 						<NoteDisplay note={review.note} />
 					</div>
 					<div className="shrink-0">
-						{review.note / 2}
+						{(review.note / 2).toFixed(1)}
 					</div>
 				</div>
 			</div>
@@ -76,7 +77,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
 
 interface ReviewProps {
 	userReview: Review & { author: User } | null;
-	reviews: (Review & { author: User})[];
+	reviews: (Review & { author: User })[];
 }
 
 export default function Reviews({ reviews, userReview }: ReviewProps) {
@@ -101,11 +102,19 @@ export default function Reviews({ reviews, userReview }: ReviewProps) {
 
 	return (
 		<div className="w-full pt-12 flex flex-col justify-center overflow-x-hidden min-h-0 relative">
+			<div className="flex justify-between items-center shrink-0">
+				<div className=""><p>Reviews</p></div>
+				<div className="">
+					<p>Note</p>
+				</div>
+			</div>
+			<div className='w-full h-px bg-white/5 mt-6 shrink-0'></div>
+
 			{userReview && <ReviewItem key={0} review={userReview} index={0} />}
 
 			{hasReviews ? (
 				<>
-					<div className="flex-1 space-y-12 overflow-y-auto overflow-x-hidden flex flex-col relative items-center reviews-scroll-container pr-8 pb-24">
+					<div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col relative items-center reviews-scroll-container pr-8 pb-24">
 						{reviews.map((review, index) => (
 							<ReviewItem key={review.id ?? index} review={review} index={index} />
 						))}

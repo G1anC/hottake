@@ -10,6 +10,8 @@ import { ModalProvider } from './contexts/ModalContext';
 import { Stat } from "@/app/components/stats"
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
+import { EuropaRegular } from '../../../lib/loadFont'
+
 
 interface MbidPageProps {
     params: Promise<{ mbid: string }>;
@@ -79,7 +81,7 @@ export default async function MbidPage({ params }: MbidPageProps) {
 
     return (
         <ModalProvider>
-            <div className="h-full w-screen relative text-white text-[12px] flex flex-col overflow-hidden">
+            <div className={`h-full w-screen relative ${EuropaRegular.className} tracking-wider text-white text-[12px] flex flex-col overflow-hidden`}>
                 <ReviewModal mbid={mbid} content={(userReview && userReview.content) ? userReview.content : ""} note={userReview ? userReview.note : 0} />
                 <div style={{ height: "calc(100vh - 2vh)"}} className="z-10 h-[80vh] pb-14 relative bg-[#0c0c0e] flex items-end gap-20">
                     <div

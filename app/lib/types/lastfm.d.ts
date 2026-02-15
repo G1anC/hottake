@@ -141,3 +141,48 @@ type DeezerTrackSearchResponse = {
     total: number
     next?: string
 }
+
+
+
+
+export interface LastfmTrackInfo {
+    track: {
+        id?: string
+        name: string
+        mbid: string
+        url: string
+        duration: number // en millisecondes
+        streamable: {
+            '#text': string
+            fulltrack: string
+        }
+        listeners?: string
+        playcount?: string
+        artist: {
+            name: string
+            mbid: string
+            url: string
+        }
+        album?: {
+            artist: string
+            title: string
+            mbid: string
+            url: string
+            image: LastfmImage[]
+            '@attr'?: {
+                position: string
+            }
+        }
+        toptags?: {
+            tag: Array<{ name: string; url: string }>
+        }
+        wiki?: {
+            published: string
+            summary: string
+            content: string
+        }
+        '@attr'?: {
+            rank?: number
+        }
+    }
+}

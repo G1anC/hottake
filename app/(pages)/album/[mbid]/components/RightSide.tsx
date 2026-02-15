@@ -1,9 +1,8 @@
 "use client";
 
 import React from 'react';
-import { NoteSetter, starColors } from '@/app/components/note';
 import { LastfmAlbumInfo, LastfmAlbumSummary } from '@/app/lib/types/lastfm';
-import Api, { PlaylistType } from '@/app/api/api';
+import Api from '@/app/api/api';
 import { useSession } from '@/app/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -79,7 +78,7 @@ export default function RightSide({ album, albumsAlike, similarAlbums, mbid, use
 				</div>
 				{(!album.tags || album.tags.tag.length <= 1) && !album.wiki && "Looks like you found a pretty unknown album, there is not even a bio ;)"}
 				{album.tags && album.tags.tag.length > 0 && <div className="flex w-full mt-12 justify-end gap-6">{album.tags.tag.map((tag: any) => <span key={tag.name}>{tag.name}</span>)}</div>}
-				{album.wiki && <div className="mt-8 w-154 text-white/50 wrap-break-word max-h-120 line-clamp-8 text-end">{album.wiki.content.split('<')[0].trim()}</div>}
+				{album.wiki && <div className="mt-8 w-154 text-white/50 wrap-break-word max-h-120 text-sm line-clamp-8 text-end">{album.wiki.content.split('<')[0].trim()}</div>}
 				{album.wiki && <div className="w-full flex justify-end"><button onClick={() => {}} className="bg-[#181819] outline outline-white/0 hover:outline-white/10 hover:text-white text-white/50 duration-150 transition-all mr-px px-6 py-3 rounded-lg mt-8">Read more</button></div>}
 			</div>
 

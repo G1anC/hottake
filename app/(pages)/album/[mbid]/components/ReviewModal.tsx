@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useModal } from "../contexts/ModalContext";
 import { useSession } from "@/app/lib/auth-client";
 import Api from "@/app/api/api";
-import { NoteSetter, starColors } from "@/app/components/note";
+import { NoteSetter } from "@/app/components/note";
+import { starColors } from "@/app/components/starColors";
 
 interface ReviewModalProps {
 	mbid: string;
@@ -25,7 +26,6 @@ export function ReviewModal({ mbid, content: previousContent, note: previousNote
 	const { openModal, setOpenModal } = useModal();
 
 	const { data: session } = useSession(); 
-	const user = session?.user
 
 	// Vérifie si le formulaire est valide
 	const isFormValid = content.trim().length > 0 && note >= 0;
@@ -113,7 +113,7 @@ export function ReviewModal({ mbid, content: previousContent, note: previousNote
 				</div>
 				<textarea
 					name="content"
-					placeholder="Write a review..."
+					placeholder="Write a review... (optional)"
 					value={content}
 					onChange={(e) => setContent(e.target.value)}
 					className="grow min-h-120 h-full resize-none p-6 px-8 w-full rounded-b-lg rounded-r-lg text-align align-top outline-none bg-[#181819] overflow-y-auto"

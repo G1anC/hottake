@@ -29,7 +29,7 @@ export default async function ArtistPage({ params }: MbidPageProps) {
         const artistInfo = await api.lastfm.getArtistInfoByMbid(artistId);
         if (artistInfo?.body)
             artist = artistInfo.body;
-    
+
         const deezerArtistInfo = await api.deezer.searchArtist(artistInfo.body.name)
         if (deezerArtistInfo?.body)
             // c'est pleins de 
@@ -43,28 +43,32 @@ export default async function ArtistPage({ params }: MbidPageProps) {
     if (!artist)
         return
     return (
-        <div className="w-screen text-white h-screen pb-14 bg-[#0c0c0e] flex justify-center items-center">
-            {artist.name}
-            <div className="w-100 aspect-square">
-                <Image
-                    className="rounded-lg border w-100 border-white/20 object-cover"
-                    src={deezerArtist.picture_xl || ''}
-                    alt="Artist Art"
-                    width={100}
-                    height={100}
-                    sizes="(max-width: 200px) 5vw, 200px"
-                    priority
+        <div className="w-screen text-white h-screen pb-14 bg-[#0c0c0e] flex justify-start relative items-start">
+            <div style={{ height: "calc(100vh - 2vh)" }} className="z-10 pb-14 w-full relative bg-[#0c0c0e] flex items-start gap-20">
+                <div className="relative pl-20 w-full aspect-square min-w-200 max-w-[80vw] z-10 py-12 lg:max-w-200">
+                    <Image
+                        className="rounded-lg border border-white/20 object-cover"
+                        src={deezerArtist.picture_xl || ''}
+                        alt="Artist Art"
+                        fill
+                        sizes="(max-width: 1024px) 80vw, 1200px"
+                        priority
+                    />
+                </div>
+                <div
+                    style={{
+                        backgroundImage: `url(${deezerArtist.picture_xl})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'start',
+                        zIndex: -1,
+                        height: "calc(20vh)"
+                    }}
+                    className="w-full absolute top-0 left-0"
                 />
+                <div className="h-[20vh] absolute w-full top-0 backdrop-blur-[150px]" />
+                <div className="w-100 aspect-square">
             </div>
-            {deezerArtist ?
-                <>
-                    {deezerArtist.name}
-                </>
-                :
-                <>
-                </>
-            
-            }
+            </div>
         </div>
     )
 }

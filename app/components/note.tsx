@@ -1,19 +1,7 @@
 'use client'
 
 import React from 'react'
-
-export const starColors = [
-    '#6C82DD', 
-    '#659CE3',
-    '#67BBDA',
-    '#2CE0A1',
-    '#77E06D',
-    '#DFD561',
-    '#E5A360',
-    '#E5845A',
-    '#E46E5E',
-    '#E3545A', 
-]
+import { starColors } from './starColors'
 
 export const NoteDisplay = ({ note }: { note: number }) => {
     note--
@@ -145,7 +133,10 @@ export const NoteSetter = ({note, setNote}: {note: number, setNote: React.Dispat
                             maskPosition: 'center'
                         }}
                         onMouseEnter={() => handleStarHover(starIndex, false)}
-                        onClick={() => handleStarClick(starIndex, false)}
+                        onClick={() => {
+                            console.log(starIndex)
+                            handleStarClick(starIndex, false)
+                        }}
                     />
                     <div 
                         className="absolute inset-0"
@@ -163,7 +154,10 @@ export const NoteSetter = ({note, setNote}: {note: number, setNote: React.Dispat
                             maskPosition: 'center'
                         }}
                         onMouseEnter={() => handleStarHover(starIndex, true)}
-                        onClick={() => handleStarClick(starIndex, true)}
+                        onClick={() => {
+                            console.log(starIndex)
+                            handleStarClick(starIndex, true)
+                        }}
                     />
                 </div>
             ))}

@@ -20,8 +20,6 @@ const Nav = () => {
                     <Image src="/logo.svg" alt="Logo" width={80} height={20} className="h-5" />
                 </Link>
                 <div className="flex space-x-5 text-[12px]">
-                    <Link href="/" className={`${EuropaBold.className} ${pathname === "/" ? "text-white" : "text-white/50"} hover:text-white text-[12px]`}>Home</Link>
-                    <Link href="/discover" className={`${EuropaBold.className} ${pathname === "/discover" ? "text-white" : "text-white/50"} hover:text-white text-[12px]`}>Discover</Link>
                     <Link href="/profile" className={`${EuropaBold.className} ${pathname === "/profile" ? "text-white" : "text-white/50"} hover:text-white text-[12px]`}>Profile</Link>
                 </div>
             </div>

@@ -1,12 +1,10 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/vercel'
 import { auth } from "@/app/lib/auth";
-
 import { users } from '../../routes/users'
 import reviews from '../../routes/reviews'
 import lastfm from '@/app/routes/lastfm'
 import deezer from '@/app/routes/deezer';
-
 import { HonoVariables } from './types';
 
 export const dynamic = 'force-dynamic'

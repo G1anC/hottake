@@ -1,4 +1,4 @@
-import Api from "../../api/api";
+import Api from "../../../api/api";
 import { Review } from "@prisma/client";
 import { EuropaBold } from "@/app/lib/loadFont";
 import { auth } from "@/app/lib/auth";
@@ -16,7 +16,7 @@ const getServerSession = async () => {
 	});
 };
 
-export default async function Profile() {
+export default async function UserProfile() {
 	const api = new Api("http://localhost:3000/api");
 
 	const session = await getServerSession();
