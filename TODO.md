@@ -1,23 +1,12 @@
 
 # BACK
-
-- changer les cookies pour qu'ils ne restent pas que 5 minutes parce que ça rend vraiment fou ça
-
 images:
 - passer un algorythme de compression lossless juste avant le stockage
 - pourquoi pas deload le backend en passant avec la decompression pour l'avoir raw
 - faire la route pour update le contenu de la review
 
-localStorage:
-- Keep le user et ses meta donnees dans le local storage comnme ca j'ai pas a faire une requete a chaque fois que j'ai besoin des infos
 
-
-
-# MIDDLEWARE
-
-- verification JWT dans le middleware pour tout centraliser
-- et faire des checks directement dans le middle pour pas que ca passe dans le back et centralister le check d'id 
-
+# MIDDLEWAR
 
 # FRONT
 
@@ -28,16 +17,11 @@ page settings
 page artiste:
 - a creer
 
-- les stars ne sont pas responsive
-
-
+page mdi:
+Changer le format de l'url pour que je puisse recuper un album meme si il n'y a pas de mbid pour ptite soeur
 
 page album:
-- verifier si les etoiles prennent bien les .5
-- si le mbid est nul mettre une page 404
-- fix les albums alike et albums du meme artiste
 - checker a mettre pour voir si le user est connecté et lui lancer une modal pour qu'il puisse le faire
-- cta pour review
 - mettre sa review en premier + bouton pour l'update comme ca il n'y a qu'une seule review par user par album
 
 page discover:
@@ -47,11 +31,7 @@ page discover:
 
 page profile:
 - changer le profile
-- meilleurs albums
 - supprimer ses reviews
-- les lists
-- metytres les lists
-- faire en sorte que les big five soient des liens aussi
 - utiliser zod pour m'occuper des forms et assurer la bonne transmission d'objects formatés
 
 
